@@ -1,0 +1,10 @@
+.container {
+  display: flex;
+  gap: 4px;
+  padding: 8px 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.tab.active {
+  font-weight: bold;
+}
