@@ -32,7 +32,12 @@ function App() {
 
   return (
     <div className="app-layout">
-      <Sidebar onSelectDoc={openDocTab} onGoHome={() => setActiveTabId('home')} />
+
+      <Sidebar 
+        // onSelectDoc={openDocTab} 
+      />
+
+
       <CenterArea
         tabs={tabs}
         activeTabId={activeTabId}

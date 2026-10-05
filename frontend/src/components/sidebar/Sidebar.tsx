@@ -1,28 +1,33 @@
-interface Props {
-  onSelectDoc: (docId: string, title: string) => void
-  onGoHome: () => void
-}
+/**
+ * 왼쪽 사이드 패널 영역
+ */
+
+import styles from "./Sidebar.module.css"
+
+import FavoriteList from "./FavoriteList"
+import RecentList from "./RecentList"
+
+// interface Props {
+//   onSelectDoc: (docId: string, title: string) => void
+// }
 
 // onSelectDoc은 즐겨찾기·최근 목록 구현 때 사용
-function Sidebar({ onGoHome }: Props) {
+function Sidebar( ) {
+
   return (
-    <aside className="sidebar">
+
+    <aside className={styles.container}>
       <button>문서 업로드</button>
-      <nav>
-        <button onClick={onGoHome}>전체 문서</button>
-      </nav>
 
       <section>
-        <h3>즐겨찾기</h3>
-        {/* 후순위: 즐겨찾기 목록 → onSelectDoc(id, title) */}
+        <FavoriteList />
       </section>
 
       <section>
-        <h3>최근 열어본</h3>
-        {/* 후순위: 열람 기록 목록 → onSelectDoc(id, title) */}
+        <RecentList />
       </section>
 
-      <footer className="user-badge">김대리 · 재무팀</footer>
+      <footer className={styles.userBadge}>김대리 · 재무팀</footer>
     </aside>
   )
 }
