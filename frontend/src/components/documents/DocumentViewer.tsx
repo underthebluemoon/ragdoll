@@ -2,7 +2,7 @@
  * 가운데 영역 문서
  */
 
-import styles from './DocumentView.module.css'
+import styles from './DocumentViewer.module.css'
 
 import type { DocTab } from '../../App'
 
@@ -10,7 +10,7 @@ interface Props {
   tab: DocTab
 }
 
-function DocumentView({ tab }: Props) {
+function DocumentViewer({ tab }: Props) {
 
 
   return (
@@ -23,4 +23,4 @@ function DocumentView({ tab }: Props) {
   )
 }
 
-export default DocumentView
+export default DocumentViewer
