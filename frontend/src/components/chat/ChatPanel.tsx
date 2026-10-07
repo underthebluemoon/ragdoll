@@ -1,4 +1,10 @@
+import styles from './ChatPanel.module.css'
+
 import { useState } from 'react'
+
+import MessageList from './MessageList'
+import ChatInput from './ChatInput'
+
 import type { ChatMessage } from '../../api/types'
 
 interface Props {
@@ -7,10 +13,9 @@ interface Props {
 
 function ChatPanel({ onSelectSource }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [input, setInput] = useState('')
 
-  function send() {
-    if (!input.trim()) return
+
+  function send(input: string) {
     // 임시 mock 응답 — 나중에 api/chat.ts (SSE 스트리밍)로 교체
     setMessages(prev => [
       ...prev,
@@ -23,39 +28,21 @@ function ChatPanel({ onSelectSource }: Props) {
         ],
       },
     ])
-    setInput('')
   }
 
   return (
-    <aside className="chat-panel">
-      <header>어시스턴트</header>
+    <aside className={styles.container}>
+      <header>채팅 제목</header>
 
-      <div className="message-list">
-        {messages.map((msg, i) => (
-          <div key={i} className={`message ${msg.role}`}>
-            <p>{msg.content}</p>
-            {msg.sources?.map(src => (
-              <button
-                key={src.chunkId}
-                className="source-card"
-                onClick={() => onSelectSource(src.docId, src.title, src.chunkId)}
-              >
-                📄 {src.title}
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
+      <MessageList 
+        messages={messages}
+        onSelectSource={onSelectSource}
+      />
 
-      <div className="chat-input">
-        <input
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && send()}
-          placeholder="질문·편집 지시…"
-        />
-        <button onClick={send}>전송</button>
-      </div>
+      <ChatInput
+        onSend={send}
+      />
+
     </aside>
   )
 }

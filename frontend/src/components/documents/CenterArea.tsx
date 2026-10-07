@@ -6,7 +6,7 @@ import styles from './CenterArea.module.css'
 
 import type { DocTab } from '../../App'
 import CenterTab from './CenterTab'
-import DocumentView from './DocumentView'
+import DocumentViewer from './DocumentViewer'
 import DocumentTable from './DocumentTable'
 
 interface Props {
@@ -31,7 +31,7 @@ function CenterArea({ tabs, activeTabId, onSelectTab, onCloseTab, onSelectDoc }:
         />
 
       {activeDoc ? (
-        <DocumentView 
+        <DocumentViewer 
           tab={activeDoc}
         />
       ) : (

@@ -1,0 +1,10 @@
+.container {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #ddd;
+}
+
+.container input {
+  flex: 1;
+}
