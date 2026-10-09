@@ -1,5 +1,3 @@
-import styles from './MessageList.module.css'
-
 import AssistantMessage from './AssistantMessage'
 import UserMessage from './UserMessage'
 
@@ -13,7 +11,7 @@ interface Props {
 function MessageList({messages, onSelectSource} : Props) {
 
     return(
-        <div className={styles.container}>
+        <div className="min-h-0 flex-1 overflow-y-auto p-3">
 
             {messages.map((msg, i) => (
                 (msg.role === 'assistant') ?

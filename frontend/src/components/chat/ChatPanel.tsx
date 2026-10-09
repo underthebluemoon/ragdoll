@@ -1,5 +1,3 @@
-import styles from './ChatPanel.module.css'
-
 import { useState } from 'react'
 
 import MessageList from './MessageList'
@@ -31,7 +29,7 @@ function ChatPanel({ onSelectSource }: Props) {
   }
 
   return (
-    <aside className={styles.container}>
+    <aside className="flex w-80 shrink-0 flex-col border-l border-border">
       <header>채팅 제목</header>
 
       <MessageList 

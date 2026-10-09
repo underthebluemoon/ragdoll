@@ -2,8 +2,6 @@
  * 왼쪽 사이드 패널 - 즐겨찾기 목록
  */
 
-// import styles from "./FavoriteList.module.css"
-
 // interface Props {
 //   onSelectDoc: (docId: string, title: string) => void
 // }

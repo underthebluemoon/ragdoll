@@ -1,5 +1,3 @@
-import styles from './AssistantMessage.module.css'
-
 import type { SourceRef } from '../../api/types'
 
 
@@ -12,13 +10,12 @@ interface Props {
 function AssistantMessage({content, sources, onSelectSource}: Props) {
 
     return(
-        <div className={styles.container}>
+        <div className="text-left">
             어시스턴트 응답
             <p>{content}</p>
             {sources?.map(src => (
               <button
                 key={src.chunkId}
-                className={styles.sourceCard}
                 onClick={() => onSelectSource(src.docId, src.title, src.chunkId)}
               >
                 📄 {src.title}

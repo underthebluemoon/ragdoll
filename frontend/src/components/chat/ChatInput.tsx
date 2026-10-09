@@ -1,5 +1,3 @@
-import styles from './ChatInput.module.css'
-
 import { useState } from 'react'
 
 interface Props {
@@ -16,8 +14,9 @@ function ChatInput({onSend} : Props) {
     }
 
     return(
-        <div className={styles.container}>
+        <div className="flex gap-2 border-t border-border p-3">
             <input
+                className="flex-1"
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => {

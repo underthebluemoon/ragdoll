@@ -2,7 +2,6 @@ import { useState } from 'react'
 import Sidebar from './components/sidebar/Sidebar'
 import CenterArea from './components/documents/CenterArea'
 import ChatPanel from './components/chat/ChatPanel'
-import './App.css'
 
 // 탭 하나 = 열린 문서. 홈(테이블 뷰)은 배열 밖의 고정 탭.
 export interface DocTab {
@@ -31,7 +30,7 @@ function App() {
   }
 
   return (
-    <div className="app-layout">
+    <div className="flex h-screen min-w-180">
 
       <Sidebar 
         // onSelectDoc={openDocTab} 

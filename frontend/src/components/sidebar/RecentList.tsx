@@ -2,8 +2,6 @@
  * 왼쪽 사이드 패널 - 최근 열어본 목록
  */
 
-// import styles from "./RecentList.module.css"
-
 // interface Props {
 //   onSelectDoc: (docId: string, title: string) => void
 // }

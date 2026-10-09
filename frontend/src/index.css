@@ -1,17 +1,19 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@import "tailwindcss";
 
-button,
-input {
-  font: inherit;
-}
+@theme {
+  /* 글꼴 */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 
-:root {
-  --text: #6b6375;
+  /* 색: 역할별 */
+  --color-primary: #3b6ef5;       /* 버튼, 활성 탭, 링크 */
+  --color-primary-soft: #eef2ff;  /* 활성 탭 배경, 사용자 말풍선 */
+  --color-ai: #7c3aed;            /* AI 관련 표시 */
+  --color-highlight: #fde68a;     /* 문서 근거 하이라이트 */
 
+  /* 색: 바탕 */
+  --color-background: #f8f8f9;        /* 앱 배경 */
+  --color-surface: #ffffff;           /* 패널 */
+  --color-border: #e4e4e7;
+  --color-foreground: #18181b;        /* 기본 글자 */
+  --color-muted-foreground: #71717a;  /* 흐린 글자 */
 }

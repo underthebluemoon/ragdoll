@@ -2,8 +2,6 @@
  * 왼쪽 사이드 패널 영역
  */
 
-import styles from "./Sidebar.module.css"
-
 import FavoriteList from "./FavoriteList"
 import RecentList from "./RecentList"
 
@@ -16,7 +14,7 @@ function Sidebar( ) {
 
   return (
 
-    <aside className={styles.container}>
+    <aside className="flex w-55 shrink-0 flex-col gap-4 border-r border-border p-3">
       <button>문서 업로드</button>
 
       <section>
@@ -27,7 +25,7 @@ function Sidebar( ) {
         <RecentList />
       </section>
 
-      <footer className={styles.userBadge}>김대리 · 재무팀</footer>
+      <footer className="mt-auto">김대리 · 재무팀</footer>
     </aside>
   )
 }

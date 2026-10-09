@@ -2,8 +2,6 @@
  * 가운데 영역 탭
  */
 
-import styles from './CenterTab.module.css'
-
 import type { DocTab } from '../../App'
 
 interface Props {
@@ -17,9 +15,9 @@ function CenterTab({ tabs, activeTabId, onSelectTab, onCloseTab }: Props) {
 
 
   return (
-    <div className={styles.container}>
+    <div className="flex gap-1 border-b border-border px-2 pt-2">
       <button
-        className={activeTabId === 'home' ? `${styles.tab} ${styles.active}` : styles.tab}
+        className={activeTabId === 'home' ? 'font-bold' : ''}
         onClick={() => onSelectTab('home')}
       >
         전체 문서
@@ -27,7 +25,7 @@ function CenterTab({ tabs, activeTabId, onSelectTab, onCloseTab }: Props) {
       {tabs.map(tab => (
         <button
           key={tab.docId}
-          className={activeTabId === tab.docId ? `${styles.tab} ${styles.active}` : styles.tab}
+          className={activeTabId === tab.docId ? 'font-bold' : ''}
           onClick={() => onSelectTab(tab.docId)}
         >
           {tab.title}

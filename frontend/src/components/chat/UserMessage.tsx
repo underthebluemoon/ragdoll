@@ -1,5 +1,3 @@
-import styles from './UserMessage.module.css'
-
 interface Props {
     content: string
 }
@@ -7,7 +5,7 @@ interface Props {
 function UserMessage({content}: Props) {
 
     return(
-        <div className={styles.container}>
+        <div className="text-right">
             유저 인풋
             <p>{content}</p>
         </div>

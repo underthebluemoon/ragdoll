@@ -2,8 +2,6 @@
  * 가운데 영역
  */
 
-import styles from './CenterArea.module.css'
-
 import type { DocTab } from '../../App'
 import CenterTab from './CenterTab'
 import DocumentViewer from './DocumentViewer'
@@ -22,7 +20,7 @@ function CenterArea({ tabs, activeTabId, onSelectTab, onCloseTab, onSelectDoc }:
 
 
   return (
-    <main className={styles.container}>
+    <main className="flex min-w-0 flex-1 flex-col">
         <CenterTab 
           tabs={tabs}
           activeTabId={activeTabId}
