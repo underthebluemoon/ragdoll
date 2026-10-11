@@ -15,11 +15,8 @@ import RecentList from "./RecentList"
 import { useEffect, useRef, useState } from "react"
 import useIsWide from "../../hooks/useIsWide"
 
-// 접힘 열림 상태 로컬스토리지 저장 - 넓은 화면
-const SIDEBAR_OPEN_KEY = "sidebar-open"
-function getSidebarOpen() {
-  return localStorage.getItem(SIDEBAR_OPEN_KEY) !== "false"
-}
+// utils
+import storage from "../../utils/localstorage"
 
 // interface Props {
 //   onSelectDoc: (docId: string, title: string) => void
@@ -30,7 +27,7 @@ function Sidebar( ) {
   // 화면 모드
   const isWide = useIsWide()
   // 밀림 모드 열림 여부
-  const [wideOpen, setWideOpen] = useState(getSidebarOpen)
+  const [wideOpen, setWideOpen] = useState(storage.getSidebarOpen)
   // 겹침 모드 열림 여부
   const [overlayOpen, setOverlayOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -55,7 +52,7 @@ function Sidebar( ) {
     if (isWide) {
       const next = !wideOpen
       setWideOpen(next)
-      localStorage.setItem(SIDEBAR_OPEN_KEY, String(next))
+      storage.setSidebarOpen(next)
     // 2. 좁은 화면의 경우
     } else {
       setOverlayOpen(prev => !prev)
