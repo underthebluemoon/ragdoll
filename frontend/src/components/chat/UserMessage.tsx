@@ -1,3 +1,7 @@
+/**
+ * 채팅 영역 - 유저 메세지
+ */
+
 interface Props {
     content: string
 }
@@ -5,9 +9,8 @@ interface Props {
 function UserMessage({content}: Props) {
 
     return(
-        <div className="text-right">
-            유저 인풋
-            <p>{content}</p>
+        <div className="flex justify-end">
+            <p className="max-w-[85%] rounded-2xl bg-primary-soft px-3 py-2 text-sm">{content}</p>
         </div>
     )
 }

@@ -1,3 +1,11 @@
+/**
+ * 채팅 영역 - 유저 입력창
+ */
+
+// library
+import { SendHorizontal } from 'lucide-react'
+
+// hooks
 import { useState } from 'react'
 
 interface Props {
@@ -16,7 +24,7 @@ function ChatInput({onSend} : Props) {
     return(
         <div className="flex gap-2 border-t border-border p-3">
             <input
-                className="flex-1"
+                className="min-w-0 flex-1 rounded-lg border border-border px-3 py-2 text-sm outline-none focus:border-primary"
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => {
@@ -27,8 +35,13 @@ function ChatInput({onSend} : Props) {
                 placeholder="질문·편집 지시…"
             />
             <button
+                className="flex items-center justify-center rounded-lg bg-primary px-3 text-white hover:bg-primary/90 disabled:opacity-40"
                 onClick={handleSend}
-            >send</button>
+                disabled={!input.trim()}
+                aria-label="전송"
+            >
+                <SendHorizontal className="size-4" />
+            </button>
         </div>
     )
 }

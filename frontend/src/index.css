@@ -17,3 +17,12 @@
   --color-foreground: #18181b;        /* 기본 글자 */
   --color-muted-foreground: #71717a;  /* 흐린 글자 */
 }
+
+/* 기본 규칙은 base 레이어 안에 둬야 Tailwind 클래스로 덮어쓸 수 있음 */
+@layer base {
+  /* Tailwind v4는 버튼 커서를 기본 화살표로 둠 → 누를 수 있는 것은 손가락으로 */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}

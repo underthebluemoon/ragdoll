@@ -1,5 +1,12 @@
-import type { SourceRef } from '../../api/types'
+/**
+ * 채팅 영역 - 어시스턴트 메세지
+ */
 
+// library
+import { FileText } from 'lucide-react'
+
+// types
+import type { SourceRef } from '../../api/types'
 
 interface Props {
     content: string
@@ -10,17 +17,22 @@ interface Props {
 function AssistantMessage({content, sources, onSelectSource}: Props) {
 
     return(
-        <div className="text-left">
-            어시스턴트 응답
-            <p>{content}</p>
-            {sources?.map(src => (
-              <button
-                key={src.chunkId}
-                onClick={() => onSelectSource(src.docId, src.title, src.chunkId)}
-              >
-                📄 {src.title}
-              </button>
-            ))}
+        <div className="flex flex-col gap-2">
+            <p className="text-sm leading-relaxed">{content}</p>
+            {sources?.length ? (
+                <div className="flex flex-wrap gap-1.5">
+                    {sources.map(src => (
+                      <button
+                        key={src.chunkId}
+                        className="flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground hover:border-primary hover:text-primary"
+                        onClick={() => onSelectSource(src.docId, src.title, src.chunkId)}
+                      >
+                        <FileText className="size-3.5" />
+                        {src.title}
+                      </button>
+                    ))}
+                </div>
+            ) : null}
         </div>
     )
 }
