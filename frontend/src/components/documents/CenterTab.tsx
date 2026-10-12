@@ -22,6 +22,8 @@ interface Props {
   onCloseAllTabs: () => void
 }
 
+// ===== 탭 스타일 : 페이드 =====
+
 // 문서 탭 - 기본 / 활성 / 비활성
 const tabBase = 'flex max-w-[12em] shrink-0 items-center gap-0.5 rounded-t-md px-2.5 py-1.5 text-sm'
 const tabActive = 'bg-primary-soft font-medium text-primary'

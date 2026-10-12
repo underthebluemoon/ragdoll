@@ -7,3 +7,6 @@
 .env
 .env.*
 !.env.example
+
+# 개인 기록 (저장소에 올리지 않음)
+docs/
