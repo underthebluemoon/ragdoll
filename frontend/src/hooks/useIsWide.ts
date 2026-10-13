@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 
 const WIDE_QUERY = '(min-width: 1024px)'
 
-function useIsWide() {
+export default function useIsWide() {
   const [isWide, setIsWide] = useState(() => window.matchMedia(WIDE_QUERY).matches)
 
   useEffect(() => {
@@ -26,5 +26,3 @@ function useIsWide() {
 
   return isWide
 }
-
-export default useIsWide

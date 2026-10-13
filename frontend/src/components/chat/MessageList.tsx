@@ -11,10 +11,9 @@ import type { ChatMessage } from '../../api/types'
 
 interface Props {
     messages: ChatMessage[]
-    onSelectSource: (docId: string, title: string, highlightChunkId?: string) => void
 }
 
-function MessageList({messages, onSelectSource} : Props) {
+function MessageList({ messages } : Props) {
 
     return(
         <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-3">
@@ -26,7 +25,6 @@ function MessageList({messages, onSelectSource} : Props) {
                         key={i}
                         content={msg.content}
                         sources={msg.sources}
-                        onSelectSource={onSelectSource}
                     />
                 ) : (
                     <UserMessage 

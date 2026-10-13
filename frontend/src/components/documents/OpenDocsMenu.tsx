@@ -5,22 +5,21 @@
 // library
 import { Ellipsis, FileText, X } from 'lucide-react'
 
-// types
-import type { DocTab } from '../../App'
-
 // hooks
 import { useEffect, useRef, useState } from 'react'
+import useCenterLocation from '../../hooks/useCenterLocation'
+import useCenterActions from '../../hooks/useCenterActions'
 
+// stores
+import { useTabStore } from '../../stores/tabStore'
 
-interface Props {
-  tabs: DocTab[]
-  activeTabId: string
-  onSelectTab: (id: string) => void
-  onCloseTab: (docId: string) => void
-  onCloseAll: () => void
-}
+function OpenDocsMenu() {
+  // ===== hooks =====
+  const { activeTabId } = useCenterLocation()
+  const { selectTab, closeTab, closeAllTabs } = useCenterActions()
+  // ===== stores =====
+  const tabs = useTabStore(state => state.tabs)
 
-function OpenDocsMenu({ tabs, activeTabId, onSelectTab, onCloseTab, onCloseAll }: Props) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -54,19 +53,19 @@ function OpenDocsMenu({ tabs, activeTabId, onSelectTab, onCloseTab, onCloseAll }
   }, [open])
 
   /**
-   * 열린 문서 중 선택
+   * 열린 문서 중 선택 → 메뉴 닫기
    * @param docId : 문서 id
    */
   function handleSelect(docId: string) {
-    onSelectTab(docId)
+    selectTab(docId)
     setOpen(false)
   }
 
   /**
-   * 열린 문서 전체 닫기
+   * 열린 문서 전체 닫기 → 메뉴 닫기
    */
   function handleCloseAll() {
-    onCloseAll()
+    closeAllTabs()
     setOpen(false)
   }
 
@@ -106,7 +105,7 @@ function OpenDocsMenu({ tabs, activeTabId, onSelectTab, onCloseTab, onCloseAll }
                   </button>
                   <button
                     className="m-1 shrink-0 rounded p-1 text-muted-foreground hover:bg-primary/10 hover:text-foreground"
-                    onClick={() => onCloseTab(tab.docId)}
+                    onClick={() => closeTab(tab.docId)}
                     aria-label={`${tab.title} 닫기`}
                   >
                     <X className="size-3.5" />

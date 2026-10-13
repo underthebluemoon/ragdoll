@@ -2,8 +2,7 @@
  * 채팅 영역
  */
 
-
-// library
+// librarys
 import { Sparkles } from 'lucide-react'
 
 // components
@@ -28,11 +27,7 @@ function getInitialChatWidth() {
   return Math.min(Math.max(storage.getChatWidth(), MIN_CHAT_WIDTH), MAX_CHAT_WIDTH)
 }
 
-interface Props {
-  onSelectSource: (docId: string, title: string, highlightChunkId?: string) => void
-}
-
-function ChatPanel({ onSelectSource }: Props) {
+function ChatPanel() {
 
   // ===== api =====
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -144,7 +139,6 @@ function ChatPanel({ onSelectSource }: Props) {
 
       <MessageList 
         messages={messages}
-        onSelectSource={onSelectSource}
       />
 
       <ChatInput

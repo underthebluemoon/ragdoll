@@ -3,59 +3,68 @@
  * 폴더를 누르면 그 폴더 안으로 들어가고, 문서를 누르면 탭으로 열림
  */
 
-// library
+// librarys
 import { useEffect, useState } from 'react'
 import { ArrowLeft, ChevronRight, FileText, FolderIcon } from 'lucide-react'
 
-// api, utils
+// api
 import { getDocuments } from '../../api/documents'
+
+// utils
 import { findFolderPath } from '../../utils/folders'
 
 // types
-import type { Document, Folder } from '../../api/types'
+import type { Document } from '../../api/types'
 
-interface Props {
-  folders: Folder[]
-  currentFolderId: string | null   // null = 홈(맨 위)
-  onOpenFolder: (folderId: string | null) => void   // null = 홈으로
-  onSelectDoc: (docId: string, title: string) => void
-}
+// hooks
+import useCenterLocation from '../../hooks/useCenterLocation'
+import useCenterActions from '../../hooks/useCenterActions'
+
+// stores
+import { useFolderStore } from '../../stores/folderStore'
 
 type SortKey = 'date' | 'name'
 
 // 한 줄 공통 스타일
 const rowBase = 'grid w-full grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 rounded-md px-2 py-1.5 text-left text-sm hover:bg-background'
 
-function DocumentTable({ folders, currentFolderId, onOpenFolder, onSelectDoc }: Props) {
+function DocumentTable() {
+  // ===== hooks =====
+  const { folderParam } = useCenterLocation()
+  const { openFolder, openDocTab } = useCenterActions()
+  // ===== stores =====
+  const folders = useFolderStore(state => state.folders)
+
+  // 정렬용
   const [sortKey, setSortKey] = useState<SortKey>('date')
   // 폴더 아이디 + 문서 같이 저장 → 폴더를 바꾼 직후 이전 폴더 문서가 잠깐 보이는 일을 막음
   const [loaded, setLoaded] = useState<{ folderId: string; documents: Document[] } | null>(null)
 
   // 폴더가 바뀌면 그 폴더의 문서를 불러옴
   useEffect(() => {
-    if (!currentFolderId) return
+    if (!folderParam) return
 
     // 응댭이 늦을 경우 버림 처리
     let ignore = false
-    getDocuments(currentFolderId).then(documents => {
-      if (!ignore) setLoaded({ folderId: currentFolderId, documents })
+    getDocuments(folderParam).then(documents => {
+      if (!ignore) setLoaded({ folderId: folderParam, documents })
     })
     return () => {
       ignore = true
     }
-  }, [currentFolderId])
+  }, [folderParam])
 
-  // 경로 계산
-  const path = currentFolderId ? findFolderPath(folders, currentFolderId) : []
+  // 경로 계산 - 문서 기준
+  const path = folderParam ? findFolderPath(folders, folderParam) : []
   const currentFolder = path.at(-1)
   const parentId = path.length >= 2 ? path[path.length - 2].id : null
 
   // 하위 폴더 목록
   const subFolders = currentFolder ? currentFolder.children : folders
   // 폴더 로딩
-  const isLoading = currentFolderId !== null && loaded?.folderId !== currentFolderId
+  const isLoading = folderParam !== null && loaded?.folderId !== folderParam
   // 현재 위치에서 보여줄 파일 목록
-  const documents = loaded?.folderId === currentFolderId ? loaded.documents : []
+  const documents = loaded?.folderId === folderParam ? loaded.documents : []
   // 정렬 문서
   const sortedDocuments = [...documents].sort((a, b) =>
     sortKey === 'date' ? b.updatedAt.localeCompare(a.updatedAt) : a.title.localeCompare(b.title, 'ko'),
@@ -70,8 +79,8 @@ function DocumentTable({ folders, currentFolderId, onOpenFolder, onSelectDoc }: 
       <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border px-3">
         <button
           className="rounded-md p-1 text-muted-foreground hover:bg-background hover:text-foreground disabled:opacity-30"
-          onClick={() => onOpenFolder(parentId)}
-          disabled={!currentFolderId}
+          onClick={() => openFolder(parentId)}
+          disabled={!folderParam}
           aria-label="상위 폴더로"
           title="상위 폴더로"
         >
@@ -96,7 +105,7 @@ function DocumentTable({ folders, currentFolderId, onOpenFolder, onSelectDoc }: 
         <ul>
           {subFolders.map(folder => (
             <li key={folder.id}>
-              <button className={rowBase} onClick={() => onOpenFolder(folder.id)}>
+              <button className={rowBase} onClick={() => openFolder(folder.id)}>
                 <span className="flex min-w-0 items-center gap-2">
                   <FolderIcon className="size-4 shrink-0 text-muted-foreground" />
                   <span className="truncate">{folder.name}</span>
@@ -109,7 +118,7 @@ function DocumentTable({ folders, currentFolderId, onOpenFolder, onSelectDoc }: 
 
           {sortedDocuments.map(doc => (
             <li key={doc.id}>
-              <button className={rowBase} onClick={() => onSelectDoc(doc.id, doc.title)} title={doc.title}>
+              <button className={rowBase} onClick={() => openDocTab(doc.id, doc.title)} title={doc.title}>
                 <span className="flex min-w-0 items-center gap-2">
                   <FileText className="size-4 shrink-0 text-muted-foreground" />
                   <span className="truncate">{doc.title}</span>

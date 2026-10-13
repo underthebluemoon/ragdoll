@@ -8,19 +8,13 @@ import { Folders, X } from 'lucide-react'
 // components
 import OpenDocsMenu from './OpenDocsMenu'
 
-// types
-import type { DocTab } from '../../App'
-
 // hooks
 import { useEffect, useRef, useState } from 'react'
+import useCenterLocation from '../../hooks/useCenterLocation'
+import useCenterActions from '../../hooks/useCenterActions'
 
-interface Props {
-  tabs: DocTab[]
-  activeTabId: string
-  onSelectTab: (id: string) => void
-  onCloseTab: (docId: string) => void
-  onCloseAllTabs: () => void
-}
+// stores
+import { useTabStore } from '../../stores/tabStore'
 
 // ===== 탭 스타일 : 페이드 =====
 
@@ -60,7 +54,13 @@ function fadeMask({ left, right }: Overflow) {
 }
 
 
-function CenterTab({ tabs, activeTabId, onSelectTab, onCloseTab, onCloseAllTabs }: Props) {
+function CenterTab() {
+  // ===== hooks =====
+  const { activeTabId } = useCenterLocation()
+  const { selectTab, closeTab } = useCenterActions()
+  // ===== stores =====
+  const tabs = useTabStore(state => state.tabs)
+
   const scrollRef = useRef<HTMLDivElement>(null)
   const [overflow, setOverflow] = useState<Overflow>({ left: false, right: false })
 
@@ -85,7 +85,7 @@ function CenterTab({ tabs, activeTabId, onSelectTab, onCloseTab, onCloseAllTabs 
       {/* 홈 버튼 */}
       <button
         className={`shrink-0 rounded-md p-2 hover:bg-background ${activeTabId === 'home' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-        onClick={() => onSelectTab('home')}
+        onClick={() => selectTab('home')}
         aria-label="문서함"
         title="문서함"
       >
@@ -95,7 +95,7 @@ function CenterTab({ tabs, activeTabId, onSelectTab, onCloseTab, onCloseAllTabs 
       {/* 문서 탭 */}
       <div
         ref={scrollRef}
-        className="flex min-w-0 flex-1 items-end gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex min-w-0 flex-1 items-end gap-1 overflow-x-auto [scrollbar-none] [&::-webkit-scrollbar]:hidden"
         style={{ maskImage: fadeMask(overflow), WebkitMaskImage: fadeMask(overflow) }}
         onScroll={e => setOverflow(measureOverflow(e.currentTarget))}
         onWheel={e => {
@@ -113,7 +113,7 @@ function CenterTab({ tabs, activeTabId, onSelectTab, onCloseTab, onCloseAllTabs 
               key={tab.docId}
               data-active={isActive}
               className={`${tabBase} ${isActive ? tabActive : tabIdle}`}
-              onClick={() => onSelectTab(tab.docId)}
+              onClick={() => selectTab(tab.docId)}
               title={tab.title}
             >
               <span className="min-w-0 flex-1 truncate text-left">{tab.title}</span>
@@ -122,7 +122,7 @@ function CenterTab({ tabs, activeTabId, onSelectTab, onCloseTab, onCloseAllTabs 
                 aria-label="탭 닫기"
                 onClick={e => {
                   e.stopPropagation()
-                  onCloseTab(tab.docId)
+                  closeTab(tab.docId)
                 }}
               >
                 <X className="size-3.5" />
@@ -133,13 +133,7 @@ function CenterTab({ tabs, activeTabId, onSelectTab, onCloseTab, onCloseAllTabs 
       </div>
 
       {tabs.length > 0 && (
-        <OpenDocsMenu
-          tabs={tabs}
-          activeTabId={activeTabId}
-          onSelectTab={onSelectTab}
-          onCloseTab={onCloseTab}
-          onCloseAll={onCloseAllTabs}
-        />
+        <OpenDocsMenu />
       )}
     </div>
   )
