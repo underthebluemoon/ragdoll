@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from "react"
 import useIsWide from "../../hooks/useIsWide"
 
 // utils
-import storage from "../../utils/localstorage"
+import localStorageUtil from "../../utils/localStorageUtil"
 
 // interface Props {
 //   onSelectDoc: (docId: string, title: string) => void
@@ -27,7 +27,7 @@ function Sidebar( ) {
   // 화면 모드
   const isWide = useIsWide()
   // 밀림 모드 열림 여부
-  const [wideOpen, setWideOpen] = useState(storage.getSidebarOpen)
+  const [wideOpen, setWideOpen] = useState(localStorageUtil.getSidebarOpen)
   // 겹침 모드 열림 여부
   const [overlayOpen, setOverlayOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -52,7 +52,7 @@ function Sidebar( ) {
     if (isWide) {
       const next = !wideOpen
       setWideOpen(next)
-      storage.setSidebarOpen(next)
+      localStorageUtil.setSidebarOpen(next)
     // 2. 좁은 화면의 경우
     } else {
       setOverlayOpen(prev => !prev)

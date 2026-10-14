@@ -16,7 +16,7 @@ import type { ChatMessage } from '../../api/types'
 import { useEffect, useRef, useState } from 'react'
 
 // utils
-import storage from '../../utils/localstorage'
+import localStorageUtil from '../../utils/localStorageUtil'
 
 // 채팅 폭 범위 (px)
 const MIN_CHAT_WIDTH = 280
@@ -24,7 +24,7 @@ const MAX_CHAT_WIDTH = 560
 
 // 저장된 폭 불러오기. 저장값이 범위 밖이면(직접 고친 값 등) 범위 안으로 맞춤
 function getInitialChatWidth() {
-  return Math.min(Math.max(storage.getChatWidth(), MIN_CHAT_WIDTH), MAX_CHAT_WIDTH)
+  return Math.min(Math.max(localStorageUtil.getChatWidth(), MIN_CHAT_WIDTH), MAX_CHAT_WIDTH)
 }
 
 function ChatPanel() {
@@ -56,7 +56,7 @@ function ChatPanel() {
   useEffect(() => {
     if (!isDragging) return
     // 드래그 중에만
-    
+
     /**
      * 채팅 영역이 넓어질 수 있는 최대 폭 = 창 폭 - (문서 왼쪽 끝 + 문서 최소 폭)
      * 단, MAX_CHAT_WIDTH는 넘지 않음
@@ -71,10 +71,10 @@ function ChatPanel() {
      const docLeft = doc.getBoundingClientRect().left
      // 문서 최소 폭
      const docMin = parseFloat(getComputedStyle(doc).minWidth) || 0
-     
+
      return Math.min(window.innerWidth - docLeft - docMin, MAX_CHAT_WIDTH)
     }
-    
+
     // 이번 드래그에서 마지막으로 계산한 폭 (마우스를 뗄 때 저장용)
     let lastWidth: number | null = null
 
@@ -95,7 +95,7 @@ function ChatPanel() {
      */
     function handlePointerUp() {
       // 움직이지 않고 클릭만 했으면 저장할 것 없음
-      if (lastWidth !== null) storage.setChatWidth(lastWidth)
+      if (lastWidth !== null) localStorageUtil.setChatWidth(lastWidth)
       setIsDragging(false)
     }
 
@@ -120,7 +120,7 @@ function ChatPanel() {
       className="relative flex min-w-70 flex-col border-l border-border bg-surface"
       style={{ width: chatWidth }}
     >
-      
+
       {/* 영역 구분선 - 드래그 중 색상 */}
       <div className={`absolute inset-y-0 left-0 w-0.5 -translate-x-1/2 ${isDragging ? "bg-primary" : ""}`} />
       {/* 영역 손잡이 */}
@@ -137,7 +137,7 @@ function ChatPanel() {
         </span>
       </header>
 
-      <MessageList 
+      <MessageList
         messages={messages}
       />
 

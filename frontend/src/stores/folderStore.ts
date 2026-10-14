@@ -1,8 +1,8 @@
 // librarys
 import { create } from 'zustand'
 
-// api
-import { ROOT_FOLDER_ID } from '../api/folders'
+// util
+import localStorageUtil from '../utils/localStorageUtil'
 
 interface FolderState {
   lastFolderId: string
@@ -10,6 +10,9 @@ interface FolderState {
 }
 
 export const useFolderStore = create<FolderState>() (set => ({
-  lastFolderId: ROOT_FOLDER_ID,
-  setLastFolderId: (folderId) => set({ lastFolderId: folderId })
+  lastFolderId: localStorageUtil.getLastFolderId(),
+  setLastFolderId: (folderId) => {
+    set({ lastFolderId: folderId })
+    localStorageUtil.setLastFolderId(folderId)
+  }
 }))

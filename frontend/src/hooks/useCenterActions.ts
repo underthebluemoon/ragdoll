@@ -4,7 +4,7 @@
  */
 
 // utils
-import { DOC_ROUTE, docHref, folderHref, HOME_TAB_ID } from '../utils/routing'
+import { DOC_ROUTE, docHref, folderHref, HOME_TAB_ID } from '../utils/routingUtil'
 
 // hooks
 import { matchPath, useNavigate } from 'react-router'

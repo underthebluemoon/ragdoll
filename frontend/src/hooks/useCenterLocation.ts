@@ -2,7 +2,7 @@
 import { ROOT_FOLDER_ID } from '../api/folders'
 
 // utils
-import { DOC_ROUTE, HOME_TAB_ID } from '../utils/routing'
+import { DOC_ROUTE, HOME_TAB_ID } from '../utils/routingUtil'
 
 // hooks
 import { useMatch, useSearchParams } from 'react-router'

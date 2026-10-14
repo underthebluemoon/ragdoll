@@ -11,7 +11,7 @@ import { ArrowLeft, ChevronRight, FileText, FolderIcon } from 'lucide-react'
 import { getFolderItems, getFolderPath, ROOT_FOLDER_ID } from '../../api/folders'
 
 // utils
-import { folderHref } from '../../utils/routing'
+import { folderHref } from '../../utils/routingUtil'
 
 // types
 import type { FolderItems, FolderSummary } from '../../api/types'

@@ -8,7 +8,7 @@ import DocumentViewer from './DocumentViewer'
 import DocumentTable from './DocumentTable'
 
 // utils
-import { HOME_TAB_ID } from '../../utils/routing'
+import { HOME_TAB_ID } from '../../utils/routingUtil'
 
 // hooks
 import useCenterLocation from '../../hooks/useCenterLocation'

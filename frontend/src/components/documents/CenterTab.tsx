@@ -9,7 +9,7 @@ import { Folders, X } from 'lucide-react'
 import OpenDocsMenu from './OpenDocsMenu'
 
 // utils
-import { HOME_TAB_ID } from '../../utils/routing'
+import { HOME_TAB_ID } from '../../utils/routingUtil'
 
 // hooks
 import { useEffect, useRef, useState } from 'react'
@@ -37,7 +37,7 @@ interface Overflow {
 /**
  * 오버플로우 계산 (1px은 소수점 오차 허용)
  * @param el: HTMLElement
- * @returns 
+ * @returns
  */
 function measureOverflow(el: HTMLElement): Overflow {
   return {
@@ -50,7 +50,7 @@ function measureOverflow(el: HTMLElement): Overflow {
  * 화면에 가려진 탭 끝만 흐리게 (24px에 걸쳐 투명해짐)
  * @param left: 왼쪽 넘침 상태
  * @param right: 오른쪽 넘침 상태
- * @returns 
+ * @returns
  */
 function fadeMask({ left, right }: Overflow) {
   return `linear-gradient(to right, ${left ? 'transparent' : 'black'}, black 24px, black calc(100% - 24px), ${right ? 'transparent' : 'black'})`
