@@ -1,12 +1,15 @@
 import type { Document } from '../types'
 
-// 가짜 문서. folderId는 mock/folders.ts의 분류 id
+// 가짜 문서. folderId는 mock/folders.ts의 폴더 id
 // demo-1~3은 채팅 가짜 응답의 출처(demo-1)와 맞춰둔 것
 export const MOCK_DOCUMENTS: Document[] = [
   // 재무팀 / 결산
   { id: 'd-101', title: '2026 3분기 결산 보고서', folderId: 'f-fin-closing', uploader: '박과장', updatedAt: '2026-10-01' },
   { id: 'd-102', title: '2026 2분기 결산 보고서', folderId: 'f-fin-closing', uploader: '박과장', updatedAt: '2026-07-03' },
   { id: 'd-103', title: '출장비 정산 내역 (9월)', folderId: 'f-fin-closing', uploader: '미래', updatedAt: '2026-10-05' },
+
+  { id: 'd-131', title: '3분기 법인세 중간예납 자료', folderId: 'f-fin-closing-2026-q3', uploader: '박과장', updatedAt: '2026-10-08' },
+  { id: 'd-132', title: '3분기 법인카드 영수증 묶음', folderId: 'f-fin-closing-2026-q3-evidence', uploader: '미래', updatedAt: '2026-10-09' },
 
   // 재무팀 / 규정
   { id: 'd-111', title: '출장비 정산 규정', folderId: 'f-fin-rules', uploader: '미래', updatedAt: '2026-07-02' },

@@ -8,6 +8,9 @@ import { Folders, X } from 'lucide-react'
 // components
 import OpenDocsMenu from './OpenDocsMenu'
 
+// utils
+import { HOME_TAB_ID } from '../../utils/routing'
+
 // hooks
 import { useEffect, useRef, useState } from 'react'
 import useCenterLocation from '../../hooks/useCenterLocation'
@@ -84,8 +87,8 @@ function CenterTab() {
     <div className="flex h-11 shrink-0 items-end gap-1 border-b border-border px-2">
       {/* 홈 버튼 */}
       <button
-        className={`shrink-0 rounded-md p-2 hover:bg-background ${activeTabId === 'home' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-        onClick={() => selectTab('home')}
+        className={`shrink-0 rounded-md p-2 hover:bg-background ${activeTabId === HOME_TAB_ID ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+        onClick={() => selectTab(HOME_TAB_ID)}
         aria-label="문서함"
         title="문서함"
       >

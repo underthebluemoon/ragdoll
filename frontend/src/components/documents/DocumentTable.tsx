@@ -8,19 +8,18 @@ import { useEffect, useState } from 'react'
 import { ArrowLeft, ChevronRight, FileText, FolderIcon } from 'lucide-react'
 
 // api
-import { getDocuments } from '../../api/documents'
+import { getFolderItems, getFolderPath, ROOT_FOLDER_ID } from '../../api/folders'
 
 // utils
-import { findFolderPath } from '../../utils/folders'
+import { folderHref } from '../../utils/routing'
 
 // types
-import type { Document } from '../../api/types'
+import type { FolderItems, FolderSummary } from '../../api/types'
 
 // hooks
+import { useNavigate } from 'react-router'
 import useCenterLocation from '../../hooks/useCenterLocation'
 import useCenterActions from '../../hooks/useCenterActions'
-
-// stores
 import { useFolderStore } from '../../stores/folderStore'
 
 type SortKey = 'date' | 'name'
@@ -30,47 +29,66 @@ const rowBase = 'grid w-full grid-cols-[minmax(0,1fr)_auto_auto] items-center ga
 
 function DocumentTable() {
   // ===== hooks =====
-  const { folderParam } = useCenterLocation()
+  const navigate = useNavigate()
+  const { folderId } = useCenterLocation()
   const { openFolder, openDocTab } = useCenterActions()
-  // ===== stores =====
-  const folders = useFolderStore(state => state.folders)
+  // ===== store =====
+  const setLastFolderId = useFolderStore(state => state.setLastFolderId)
 
-  // 정렬용
-  const [sortKey, setSortKey] = useState<SortKey>('date')
-  // 폴더 아이디 + 문서 같이 저장 → 폴더를 바꾼 직후 이전 폴더 문서가 잠깐 보이는 일을 막음
-  const [loaded, setLoaded] = useState<{ folderId: string; documents: Document[] } | null>(null)
+  // ===== 데이터 호출 =====
 
-  // 폴더가 바뀌면 그 폴더의 문서를 불러옴
+  // 표시할 폴더 데이터 : 폴더 아이디 + 루트 ~ 현재 폴더 경로 + 현재 폴더가 가진 아이템들
+  const [folderDetail, setFolderDetail] = useState<{
+    folderId: string
+    path: FolderSummary[] | undefined
+    items: FolderItems | undefined
+  } | null>(null)
+
+  // api 호출 : 루트 ~ 현재 폴더 경로, 현재 폴더의 아이템들
   useEffect(() => {
-    if (!folderParam) return
-
-    // 응댭이 늦을 경우 버림 처리
     let ignore = false
-    getDocuments(folderParam).then(documents => {
-      if (!ignore) setLoaded({ folderId: folderParam, documents })
+
+    Promise.all([getFolderPath(folderId), getFolderItems(folderId)]).then(([path, items]) => {
+      if (!ignore) setFolderDetail({ folderId, path, items })
     })
+
     return () => {
       ignore = true
     }
-  }, [folderParam])
+  }, [folderId])
 
-  // 경로 계산 - 문서 기준
-  const path = folderParam ? findFolderPath(folders, folderParam) : []
-  const currentFolder = path.at(-1)
-  const parentId = path.length >= 2 ? path[path.length - 2].id : null
+  // 로딩 중
+  const isFolderPending = folderDetail?.folderId !== folderId
+  // 로딩 후 데이터 - 가공용
+  const folderItems = isFolderPending ? undefined : folderDetail.items
+  const documents = folderItems?.documents ?? []
+  const subFolders = folderItems?.folders ?? []
+  // 로딩 후 경로 - 가공용
+  const path = isFolderPending ? undefined : folderDetail.path
+  const parentId = path?.at(-2)?.id ?? ROOT_FOLDER_ID
 
-  // 하위 폴더 목록
-  const subFolders = currentFolder ? currentFolder.children : folders
-  // 폴더 로딩
-  const isLoading = folderParam !== null && loaded?.folderId !== folderParam
-  // 현재 위치에서 보여줄 파일 목록
-  const documents = loaded?.folderId === folderParam ? loaded.documents : []
+  // ===== missing 경우 홈으로 돌려보내기 =====
+  // 주소와 표시 폴더 불일치
+  const isFolderMissing = !isFolderPending && (!path || !folderItems)
+
+  useEffect(() => {
+    if (isFolderMissing) navigate(folderHref(ROOT_FOLDER_ID), { replace: true })
+  }, [isFolderMissing, navigate])
+
+  // ===== 마지막에 위치했던 폴더 경로 기억 =====
+  useEffect(() => {
+    if (!isFolderPending && !isFolderMissing) setLastFolderId(folderId)
+  }, [isFolderPending, isFolderMissing, folderId, setLastFolderId])
+
+// ===== 정렬 =====
+  const [sortKey, setSortKey] = useState<SortKey>('date')
   // 정렬 문서
   const sortedDocuments = [...documents].sort((a, b) =>
     sortKey === 'date' ? b.updatedAt.localeCompare(a.updatedAt) : a.title.localeCompare(b.title, 'ko'),
   )
 
-  const isEmpty = !isLoading && subFolders.length === 0 && sortedDocuments.length === 0
+  // ===== 폴더의 내용이 비어있는 경우 =====
+  const isEmpty = !isFolderPending && !isFolderMissing && subFolders.length === 0 && sortedDocuments.length === 0
 
   return (
 
@@ -80,14 +98,14 @@ function DocumentTable() {
         <button
           className="rounded-md p-1 text-muted-foreground hover:bg-background hover:text-foreground disabled:opacity-30"
           onClick={() => openFolder(parentId)}
-          disabled={!folderParam}
+          disabled={folderId === ROOT_FOLDER_ID}
           aria-label="상위 폴더로"
           title="상위 폴더로"
         >
           <ArrowLeft className="size-4" />
         </button>
         <span className="min-w-0 flex-1 truncate text-sm font-medium">
-          {path.length > 0 ? path.map(folder => folder.name).join(' / ') : '문서함'}
+          {path?.map(folder => folder.name).join(' / ') ?? ''}
         </span>
         <select
           className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-muted-foreground"
@@ -130,7 +148,7 @@ function DocumentTable() {
           ))}
         </ul>
 
-        {isLoading && <p className="px-2 py-1.5 text-sm text-muted-foreground">불러오는 중…</p>}
+        {isFolderPending && <p className="px-2 py-1.5 text-sm text-muted-foreground">불러오는 중…</p>}
         {isEmpty && <p className="px-2 py-1.5 text-sm text-muted-foreground">이 폴더에 문서가 없어요.</p>}
       </div>
     </div>

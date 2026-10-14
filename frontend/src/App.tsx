@@ -1,3 +1,8 @@
+/**
+ * 전체 레이아웃 (사이드바 | 가운데 | 채팅)
+ * 주소에만 있는 문서(새로고침·공유 링크)의 탭 만들기, 문서가 없거나 권한 밖이면 마지막 폴더로
+ */
+
 // components
 import Sidebar from './components/sidebar/Sidebar'
 import CenterArea from './components/documents/CenterArea'
@@ -7,7 +12,7 @@ import ChatPanel from './components/chat/ChatPanel'
 import { getDocument } from './api/documents'
 
 // utils
-import { folderPath } from './utils/path'
+import { folderHref, HOME_TAB_ID } from './utils/routing'
 
 // hooks
 import { useEffect, useEffectEvent } from 'react'
@@ -22,34 +27,21 @@ import { useFolderStore } from './stores/folderStore'
 function App() {
   // ===== hooks =====
   const navigate = useNavigate()
-  const { activeTabId, folderParam } = useCenterLocation()
-
-  // ===== 폴더 제어 =====
-  const fetchFolders = useFolderStore(state => state.fetchFolders)
-
-  useEffect(() => {
-    fetchFolders()
-  }, [fetchFolders])
-
-  // 마지막에 위치했던 폴더 경로 기억
+  const { activeTabId } = useCenterLocation()
+  // ===== store =====
+  const tabs = useTabStore(state => state.tabs)
+  const putTab = useTabStore(state => state.putTab)
   const lastFolderId = useFolderStore(state => state.lastFolderId)
-  const setLastFolderId = useFolderStore(state => state.setLastFolderId)
-
-  useEffect(() => {
-    if (activeTabId === 'home') setLastFolderId(folderParam)
-  }, [activeTabId, folderParam, setLastFolderId])
 
   // ===== 탭 제어 =====
   // 주소에 있는 문서인데 탭이 없으면 탭을 새로 열기 (새로고침, 공유 링크, 닫은 탭으로 뒤로가기)
   // 문서 정보(제목)를 서버에서 받아서 탭 추가. 없거나 권한 밖이면 문서함으로 (replace)
-  const tabs = useTabStore(state => state.tabs)
-  const putTab = useTabStore(state => state.putTab)
 
-  // 탭의 activeTabId 중, 경로의 activeTabId가 없는 경우
-  const missingDocId = (activeTabId !== 'home' && !tabs.some(t => t.docId === activeTabId)) ? activeTabId : null
+  // 주소의 문소가 탭에 없는 경우
+  const missingDocId = (activeTabId !== HOME_TAB_ID && !tabs.some(t => t.docId === activeTabId)) ? activeTabId : null
 
   const goBackToFolder = useEffectEvent(() => {
-    navigate(folderPath(lastFolderId), { replace: true })
+    navigate(folderHref(lastFolderId), { replace: true })
   })
 
   useEffect(() => {

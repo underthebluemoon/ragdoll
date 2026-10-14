@@ -17,12 +17,15 @@ export interface Document {
   updatedAt: string   // 마지막 수정일 (YYYY-MM-DD)
 }
 
-// 폴더: 부서 → 분류 2단계. 부서의 children = 분류 목록, 분류의 children = 빈 배열
-// (나중에 더 깊은 폴더가 필요하면 분류에도 children을 채우면 됨)
-export interface Folder {
+export interface FolderSummary {
   id: string
   name: string
-  children: Folder[]
+  depth: number
+}
+
+export interface FolderItems {
+  folders: FolderSummary[]
+  documents: Document[]
 }
 
 // 챗 답변의 출처 (offset은 문서 내 하이라이트용)

@@ -1,18 +1,21 @@
+// api
+import { ROOT_FOLDER_ID } from '../api/folders'
+
 // utils
-import { DOC_PATH } from '../utils/path'
+import { DOC_ROUTE, HOME_TAB_ID } from '../utils/routing'
 
 // hooks
 import { useMatch, useSearchParams } from 'react-router'
 
 export default function useCenterLocation() {
-  const docMatch = useMatch(DOC_PATH)
+  const docMatch = useMatch(DOC_ROUTE)
   const [searchParams] = useSearchParams()
 
-  const activeTabId = docMatch?.params.docId ?? 'home'
-  const folderParam = searchParams.get('folder')
+  const activeTabId = docMatch?.params.docId ?? HOME_TAB_ID
+  const folderId = searchParams.get('folder') ?? ROOT_FOLDER_ID
 
   return {
     activeTabId,
-    folderParam,
+    folderId,
   }
 }

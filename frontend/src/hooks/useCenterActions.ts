@@ -4,7 +4,7 @@
  */
 
 // utils
-import { DOC_PATH, docPath, folderPath } from '../utils/path'
+import { DOC_ROUTE, docHref, folderHref, HOME_TAB_ID } from '../utils/routing'
 
 // hooks
 import { matchPath, useNavigate } from 'react-router'
@@ -14,11 +14,11 @@ import { useTabStore } from '../stores/tabStore'
 import { useFolderStore } from '../stores/folderStore'
 
 function getActiveTabId() {
-  return matchPath(DOC_PATH, window.location.pathname)?.params.docId ?? 'home'
+  return matchPath(DOC_ROUTE, window.location.pathname)?.params.docId ?? HOME_TAB_ID
 }
 
-function getLastFolderPath() {
-  return folderPath(useFolderStore.getState().lastFolderId)
+function getLastFolderHref() {
+  return folderHref(useFolderStore.getState().lastFolderId)
 }
 
 export default function useCenterActions() {
@@ -35,16 +35,16 @@ export default function useCenterActions() {
    * 폴더 열기. 홈 탭으로 가서 그 폴더 안을 보여줌. null인 경우, 맨 위
    * @param folderId 폴더 아이디
    */
-  function openFolder(folderId: string | null) {
-    navigate(folderPath(folderId))
+  function openFolder(folderId: string) {
+    navigate(folderHref(folderId))
   }
 
   /**
    * 탭 선택 시 주소 이동
-   * @param id 문서 아이디 | 'home'
+   * @param id 문서 아이디 | 'HOME_TAB_ID'
    */
   function selectTab(id: string) {
-    navigate(id === 'home' ? getLastFolderPath() : docPath(id))
+    navigate(id === HOME_TAB_ID ? getLastFolderHref() : docHref(id))
   }
 
   /**
@@ -55,7 +55,7 @@ export default function useCenterActions() {
    */
   function openDocTab(docId: string, title: string, highlightChunkId?: string) {
     putTab(docId, title, highlightChunkId)
-    navigate(docPath(docId))
+    navigate(docHref(docId))
   }
 
   /**
@@ -64,7 +64,7 @@ export default function useCenterActions() {
    */
   function closeTab(docId: string) {
     removeTab(docId)
-    if (getActiveTabId() === docId) navigate(getLastFolderPath(), { replace: true })
+    if (getActiveTabId() === docId) navigate(getLastFolderHref(), { replace: true })
   }
 
   /**
@@ -72,7 +72,7 @@ export default function useCenterActions() {
    */
   function closeAllTabs() {
     clearTabs()
-    if (getActiveTabId() !== 'home') navigate(getLastFolderPath(), { replace: true })
+    if (getActiveTabId() !== HOME_TAB_ID) navigate(getLastFolderHref(), { replace: true })
   }
 
   return {
