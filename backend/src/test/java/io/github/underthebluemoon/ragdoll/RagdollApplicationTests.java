@@ -1,10 +1,10 @@
-package io.github.underthebluemoon.rag_doc_assistant;
+package io.github.underthebluemoon.ragdoll;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RagDocAssistantApplicationTests {
+class RagdollApplicationTests {
 
 	@Test
 	void contextLoads() {

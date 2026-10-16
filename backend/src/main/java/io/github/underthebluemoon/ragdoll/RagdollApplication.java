@@ -1,13 +1,13 @@
-package io.github.underthebluemoon.rag_doc_assistant;
+package io.github.underthebluemoon.ragdoll;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RagDocAssistantApplication {
+public class RagdollApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RagDocAssistantApplication.class, args);
+		SpringApplication.run(io.github.underthebluemoon.ragdoll.RagdollApplication.class, args);
 	}
 
 }

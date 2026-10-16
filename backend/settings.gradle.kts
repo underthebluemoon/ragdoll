@@ -1,1 +1,1 @@
-rootProject.name = "rag-doc-assistant"
+rootProject.name = "ragdoll"

@@ -1,4 +1,4 @@
-# rag-doc-assistant
+# ragdoll
 
 > 과거 사내 문서를 검색해 새 문서 작성에 활용하는, **"쓰기 위한 검색"** 도구
 > (단순 Q&A 챗봇이 아님 — 권한·출처·원본 보존을 통제하는 사내 문서 AI)
@@ -18,7 +18,7 @@
 - **Auth**: JWT
 
 ## 구조
-rag-doc-assistant/
+ragdoll/
 ├── backend/    # Spring Boot
 └── frontend/   # React + TypeScript
 
