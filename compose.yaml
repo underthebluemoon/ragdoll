@@ -1,0 +1,15 @@
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    container_name: ragdoll-db
+    environment:
+      POSTGRES_DB: ragdoll
+      POSTGRES_USER: ragdoll
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql
+
+volumes:
+  db-data:
