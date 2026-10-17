@@ -1,3 +1,7 @@
 spring:
   application:
     name: ragdoll
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ragdoll
+    username: ragdoll
+    password: ${DB_PASSWORD}
