@@ -1,29 +1,47 @@
 package io.github.underthebluemoon.ragdoll.folder;
 
+import io.github.underthebluemoon.ragdoll.document.Document;
+import io.github.underthebluemoon.ragdoll.document.DocumentRepository;
+import io.github.underthebluemoon.ragdoll.document.dto.DocumentSummary;
+import io.github.underthebluemoon.ragdoll.folder.dto.FolderItemsResponse;
 import io.github.underthebluemoon.ragdoll.folder.dto.FolderSummary;
+import io.github.underthebluemoon.ragdoll.user.User;
+import io.github.underthebluemoon.ragdoll.user.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class FolderService {
     private final FolderRepository folderRepository;
+    private final DocumentRepository documentRepository;
+    private final UserRepository userRepository;
 
-    public FolderService(FolderRepository folderRepository) {
+    // constructure
+    public FolderService(FolderRepository folderRepository, DocumentRepository documentRepository, UserRepository userRepository) {
         this.folderRepository = folderRepository;
+        this.documentRepository = documentRepository;
+        this.userRepository = userRepository;
     }
 
+    // folderId 로 depth 0 부터 직계 부모 경로 찾기
     public List<FolderSummary> getPath(Long folderId) {
         List<Folder> path = new ArrayList<>();
 
+        // folderId로 parentId 찾기
         Folder folder = folderRepository.findByIdAndDeletedAtIsNull(folderId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         path.add(folder);
 
+        // parentId 로 거슬러 올라가며 path에 담기
         while (folder.getParentId() != null) {
             Folder parentFolder = folderRepository.findByIdAndDeletedAtIsNull(folder.getParentId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -31,12 +49,31 @@ public class FolderService {
             folder = parentFolder;
         }
 
+        // 가공
         Collections.reverse(path);
-
         return path.stream()
             .map(f -> new FolderSummary(f.getId(), f.getName(), f.getDepth()))
             .toList();
 
     }
 
+    public FolderItemsResponse getItems(Long folderId) {
+        // folderId 존재 확인
+        folderRepository.findByIdAndDeletedAtIsNull(folderId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        // 현재 위치에 있는 폴더 리스트
+        List<Folder> currentFolders = folderRepository.findByParentIdAndDeletedAtIsNullOrderBySortOrderAscNameAsc(folderId);
+        // 현재 위치에 있는 문서 리스트
+        List<Document> currentDocuments = documentRepository.findByFolderIdAndDeletedAtIsNull(folderId);
+        // 문서들의 uploaderId를 뽑아 조회 → uploaderId 와 userName 맵핑
+        List<Long> currentUploaderIds = currentDocuments.stream().map(Document::getUploaderId).toList();
+        List<User> currentUploaders = userRepository.findAllById(currentUploaderIds);
+        Map<Long, String> uploaderNameById = currentUploaders.stream().collect(Collectors.toMap(User::getId, User::getName));
+
+        // 가공
+        List<FolderSummary> folderItems = currentFolders.stream().map(f -> new FolderSummary(f.getId(), f.getName(), f.getDepth())).toList();
+        List<DocumentSummary> documentItems = currentDocuments.stream().map(d -> new DocumentSummary(d.getId(), d.getName(), d.getFolderId(), uploaderNameById.get(d.getUploaderId()), LocalDate.ofInstant(d.getUpdatedAt(), ZoneId.of("Asia/Seoul")))).toList();
+        return new FolderItemsResponse(folderItems, documentItems);
+    }
 }
