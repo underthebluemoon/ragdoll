@@ -1,6 +1,6 @@
 CREATE TABLE documents (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
   folder_id BIGINT NOT NULL REFERENCES folders (id),
   uploader_id BIGINT NOT NULL REFERENCES users (id),
   uploader_type VARCHAR(20) NOT NULL DEFAULT 'USER' CHECK ( uploader_type IN ('USER', 'ASSISTANT')),

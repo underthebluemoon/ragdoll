@@ -2,7 +2,7 @@ CREATE TABLE documents_aud (
   id BIGINT NOT NULL,
   rev BIGINT NOT NULL REFERENCES revinfo (rev),
   revtype SMALLINT,
-  name VARCHAR(255),
+  title VARCHAR(255),
   folder_id BIGINT,
   uploader_id BIGINT,
   uploader_type VARCHAR(20),

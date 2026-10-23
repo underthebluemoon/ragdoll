@@ -12,7 +12,7 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String title;
     private Long folderId;
     private Long uploaderId;
     @Enumerated(EnumType.STRING)
@@ -35,7 +35,7 @@ public class Document {
 
     // getter
     public Long getId() { return id; }
-    public String getName() { return name; }
+    public String getTitle() { return title; }
     public Long getFolderId() { return folderId; }
 
     public Long getUploaderId() { return uploaderId; }

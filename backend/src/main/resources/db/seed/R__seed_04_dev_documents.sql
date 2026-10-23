@@ -1,4 +1,4 @@
-INSERT INTO documents (name, folder_id, uploader_id, updater_id, file_path, file_type, file_size, created_at, updated_at)
+INSERT INTO documents (title, folder_id, uploader_id, updater_id, file_path, file_type, file_size, created_at, updated_at)
 VALUES
   (
     '2026 3분기 결산 보고서',
