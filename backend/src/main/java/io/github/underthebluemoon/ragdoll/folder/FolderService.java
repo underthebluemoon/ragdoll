@@ -23,13 +23,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class FolderService {
+    // field
     private final FolderRepository folderRepository;
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
 
     private static final Logger log = LoggerFactory.getLogger(FolderService.class);
 
-    // constructure
+    // constructor
     public FolderService(FolderRepository folderRepository, DocumentRepository documentRepository, UserRepository userRepository) {
         this.folderRepository = folderRepository;
         this.documentRepository = documentRepository;
@@ -61,6 +62,7 @@ public class FolderService {
 
     }
 
+    // folderId로 현재 아이템들(폴더+문서) 찾기
     public FolderItemsResponse getItems(Long folderId) {
         // folderId 존재 확인 - 없으면 NOT_FOUND
         folderRepository.findByIdAndDeletedAtIsNull(folderId)
