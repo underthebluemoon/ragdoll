@@ -1,4 +1,4 @@
-package io.github.underthebluemoon.ragdoll.controller;
+package io.github.underthebluemoon.ragdoll.global;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
