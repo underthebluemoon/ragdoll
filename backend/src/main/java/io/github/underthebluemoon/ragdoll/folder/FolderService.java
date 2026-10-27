@@ -72,7 +72,7 @@ public class FolderService {
      * folderId로 현재 아이템들(폴더+문서) 찾기
      * 문서의 uploaderId로 조회한 user 정보가 없는 경우 uploader는 null(warn log)
      * @param folderId folders PK
-     * @return 현재 위치의 폴더 정보 List (folderId, name, depth) + 현재 위치의 문서 정보 List (documentId, title, folderId, uploader(name), updatedAt)
+     * @return 현재 위치의 폴더 정보 List (folderId, name, depth) + 현재 위치의 문서 정보 List (documentId, title, folderId, uploader(name), createdAt, updatedAt)
      * @throws BusinessException FOLDER_NOT_FOUND : folderId로 조회한 폴더가 없는 경우
      */
     public FolderItemsResponse getItems(Long folderId) {
@@ -101,6 +101,7 @@ public class FolderService {
             }
             return new DocumentSummary(
                 d.getId(), d.getTitle(), d.getFolderId(), uploader,
+                LocalDate.ofInstant(d.getCreatedAt(), ZoneId.of("Asia/Seoul")),
                 LocalDate.ofInstant(d.getUpdatedAt(), ZoneId.of("Asia/Seoul"))
             );
         }).toList();

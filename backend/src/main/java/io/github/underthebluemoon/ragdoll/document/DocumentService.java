@@ -33,7 +33,7 @@ public class DocumentService {
     /**
      * documentId로 문서 찾기
      * @param documentId documents PK
-     * @return 문서 정보 객체 - id, title, folderId, uploader(name), updatedAt
+     * @return 문서 정보 객체 - id, title, folderId, uploader(name), createdAt, updatedAt
      * @throws BusinessException DOCUMENT_NOT_FOUND : 문서가 없거나 삭제 됨
      * @throws IllegalStateException 업로더 없음 (데이터 꼬임)
      */
@@ -50,6 +50,7 @@ public class DocumentService {
         return new DocumentSummary(
             document.getId(), document.getTitle(), document.getFolderId(),
             uploader.getName(),
+            LocalDate.ofInstant(document.getCreatedAt(), ZoneId.of("Asia/Seoul")),
             LocalDate.ofInstant(document.getUpdatedAt(), ZoneId.of("Asia/Seoul"))
         );
     }
@@ -58,7 +59,7 @@ public class DocumentService {
      * documentId List로 여러 문서 찾기
      * 없거나 삭제된 문서는 예외 없이 결과에서 제외. 업로더가 없으면 uploader는 null(warn log).
      * @param documentIds documents PK가 담긴 List
-     * @return 요청 순서대로 정렬(중복 없음)된 문서 정보 객체(id, title, folderId, uploader(name), updatedAt)들이 담긴 List.
+     * @return 요청 순서대로 정렬(중복 없음)된 문서 정보 객체(id, title, folderId, uploader(name), createdAt, updatedAt)들이 담긴 List.
      */
     public List<DocumentSummary> getDocumentsByIds(List<Long> documentIds) {
         // documentIds가 비어있을 경우, 바로 반환
@@ -80,6 +81,7 @@ public class DocumentService {
             }
             return new DocumentSummary(
                 d.getId(), d.getTitle(), d.getFolderId(), uploader,
+                LocalDate.ofInstant(d.getCreatedAt(), ZoneId.of("Asia/Seoul")),
                 LocalDate.ofInstant(d.getUpdatedAt(), ZoneId.of("Asia/Seoul"))
             );
         }).toList();
