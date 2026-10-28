@@ -5,15 +5,15 @@ import { create } from 'zustand';
 import localStorageUtil from '../utils/localStorageUtil';
 
 export interface DocTab {
-  docId: string;
+  docId: number;
   title: string;
   highlightChunkId?: string;
 }
 
 interface TabState {
   tabs: DocTab[];
-  putTab: (docId: string, title: string, highlightChunkId?: string) => void;
-  removeTab: (docId: string) => void;
+  putTab: (docId: number, title: string, highlightChunkId?: string) => void;
+  removeTab: (docId: number) => void;
   clearTabs: () => void;
 }
 

@@ -14,7 +14,7 @@ import { getFolderItems, getFolderPath, ROOT_FOLDER_ID } from '../../api/folders
 import { folderHref } from '../../utils/routingUtil'
 
 // types
-import type { FolderItems, FolderSummary } from '../../api/types'
+import type { FolderItemsResponse, FolderSummary } from '../../api/types'
 
 // hooks
 import { useNavigate } from 'react-router'
@@ -39,9 +39,9 @@ function DocumentTable() {
 
   // 표시할 폴더 데이터 : 폴더 아이디 + 루트 ~ 현재 폴더 경로 + 현재 폴더가 가진 아이템들
   const [folderDetail, setFolderDetail] = useState<{
-    folderId: string
+    folderId: number
     path: FolderSummary[] | undefined
-    items: FolderItems | undefined
+    items: FolderItemsResponse | undefined
   } | null>(null)
 
   // api 호출 : 루트 ~ 현재 폴더 경로, 현재 폴더의 아이템들

@@ -5,8 +5,8 @@ import { create } from 'zustand'
 import localStorageUtil from '../utils/localStorageUtil'
 
 interface FolderState {
-  lastFolderId: string
-  setLastFolderId: (folderId: string) => void
+  lastFolderId: number
+  setLastFolderId: (folderId: number) => void
 }
 
 export const useFolderStore = create<FolderState>() (set => ({

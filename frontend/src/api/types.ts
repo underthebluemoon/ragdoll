@@ -1,5 +1,8 @@
-// API 계약 타입 — 백엔드 DTO의 명세서 역할
+/**
+ * API types - 백엔드 DTO의 명세서 역할
+ */
 
+// 사용자 (백엔드 API 아직 없음 - 로그인 만들 때 맞출 것)
 export interface User {
   id: string
   name: string
@@ -7,36 +10,64 @@ export interface User {
   rank: number
 }
 
-// 문서 목록 한 줄에 필요한 정보. 부서·분류는 folderId로 폴더를 찾아서 알 수 있음
-// (본문, 버전, 권한 등은 문서 조회 API를 만들 때 추가)
-export interface Document {
-  id: string
+/**
+ * 백엔드에서 오는 응답 형식
+ * name: 응답 코드 이름 (SUCCESS, FOLDER_NOT_FOUND 등)
+ * code: 응답 코드 (S000, F001 등)
+ * data: 실제 내용. 에러일 때는 null
+ */
+export interface ResponseCodeDTO<T> {
+  name: string,
+  code: string,
+  data: T
+}
+
+/**
+ * 문서 요약 :
+ * id, title, folderId, uploader(name), createdAt, updatedAt
+ */
+export interface DocumentSummary {
+  id: number
   title: string
-  folderId: string
+  folderId: number
   uploader: string
+  createdAt: string   // 생성일 (YYYY-MM-DD)
   updatedAt: string   // 마지막 수정일 (YYYY-MM-DD)
 }
 
+/**
+ * 폴더 요약 :
+ *  id, name, depth
+ */
 export interface FolderSummary {
-  id: string
+  id: number
   name: string
   depth: number
 }
 
-export interface FolderItems {
+/**
+ * 현재 폴더 위치의 아이템들 : 폴더 요약 (FolderSummary[]) + 문서 요약 (DocumentSummary[])
+ */
+export interface FolderItemsResponse {
   folders: FolderSummary[]
-  documents: Document[]
+  documents: DocumentSummary[]
 }
 
-// 챗 답변의 출처 (offset은 문서 내 하이라이트용)
+/**
+ * assitant 답변 출처  (offset은 문서 내 하이라이트용)
+ */
 export interface SourceRef {
-  docId: string
+  docId: number
   title: string
   chunkId: string
   startOffset: number
   endOffset: number
 }
 
+/**
+ * 채팅 메세지 :
+ * role(user|assistant), content, sources?
+ */
 export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string

@@ -41,7 +41,7 @@ function ChatPanel() {
         role: 'assistant',
         content: '(mock) 연차는 15일입니다.',
         sources: [
-          { docId: 'demo-1', title: '취업규칙 2026', chunkId: 'c-22', startOffset: 120, endOffset: 260 },
+          { docId: 1, title: '취업규칙 2026', chunkId: 'c-22', startOffset: 120, endOffset: 260 },
         ],
       },
     ])

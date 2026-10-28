@@ -13,7 +13,7 @@ import { getDocument } from '../../api/documents'
 import { getFolderPath } from '../../api/folders'
 
 // types
-import type { Document, FolderSummary } from '../../api/types'
+import type { DocumentSummary, FolderSummary } from '../../api/types'
 import type { DocTab } from '../../stores/tabStore'
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
 
 function DocumentViewer({ activeDoc }: Props) {
 
-  const [docDetail, setDocDetail] = useState<{ docId: string; doc: Document | undefined; path: FolderSummary[] | undefined } | null>(null)
+  const [docDetail, setDocDetail] = useState<{ docId: number; doc: DocumentSummary | undefined; path: FolderSummary[] | undefined } | null>(null)
 
   // 문서 호출 → 호출된 문서의 폴더id로 문서의 경로 호출
   useEffect(() => {

@@ -56,7 +56,7 @@ function OpenDocsMenu() {
    * 열린 문서 중 선택 → 메뉴 닫기
    * @param docId : 문서 id
    */
-  function handleSelect(docId: string) {
+  function handleSelect(docId: number) {
     selectTab(docId)
     setOpen(false)
   }

@@ -16,10 +16,10 @@ const SIDEBAR_OPEN_KEY = 'sidebar-open'
 // === 채팅 영역 폭 px (number)
 const CHAT_WIDTH_KEY = 'chat-width'
 
-// === 열린 문서 탭 id 목록 (string[])
+// === 열린 문서 탭 id 목록 (number[])
 const OPEN_TAB_IDS_KEY = 'open-tab-ids'
 
-// === 문서함에서 마지막으로 본 폴더 id (string)
+// === 문서함에서 마지막으로 본 폴더 id (number)
 const LAST_FOLDER_ID_KEY = 'last-folder-id'
 
 
@@ -69,33 +69,16 @@ function getStoredNumber(key: string, fallback: number): number {
   return Number.isFinite(num) ? num : fallback
 }
 
-/**
- * 로컬스토리지에서 string 읽기
- * @param key 로컬스토리지 키
- * @param fallback 기본값 (값이 저장되어 있지 않거나, 빈 문자열일 때 반환할 값)
- * @returns 저장된 문자열 | fallback
- */
-function getStoredString(key: string, fallback: string): string {
-  const saved = read(key)
-  return saved ? saved : fallback
-}
-
-/**
- * 로컬스토리지에서 string[] 읽기
- * @param key 로컬스토리지 키
- * @param fallback 기본값 (값이 저장되어 있지 않거나, JSON이 아니거나, 문자열 배열이 아닐 때 반환할 값)
- * @returns 저장된 문자 배열 | fallback
- */
-function getStoredStringArray(key: string, fallback: string[]): string[]  {
-  const saved = read(key)
-  if (!saved) return fallback
+function getStoredNumberArray(key: string, fallback: number[]): number[] {
+  const saved = read(key);
+  if (!saved) return fallback;
 
   try {
-    const parsedSaved = JSON.parse(saved)
-    if (Array.isArray(parsedSaved) && parsedSaved.every(item => typeof item === 'string')) return parsedSaved
-    return fallback
+    const parsedSaved = JSON.parse(saved);
+    if (Array.isArray(parsedSaved) && parsedSaved.every(item => Number.isInteger(item))) return parsedSaved;
+    return fallback;
   } catch {
-    return fallback
+    return fallback;
   }
 }
 
@@ -174,15 +157,15 @@ function setChatWidth(value: number) {
  * 로컬스토리지에서 열려있는 탭들 얻기. 저장된 값이 없거나 이상한 값이면 빈배열 반환
  * @returns 열려있는 탭 아이디들의 배열 | []
  */
-function getOpenTabIds(): string[] {
-  return getStoredStringArray(OPEN_TAB_IDS_KEY, [])
+function getOpenTabIds(): number[] {
+  return getStoredNumberArray(OPEN_TAB_IDS_KEY, []);
 }
 
 /**
  * 로컬스토리지에 열려있는 탭들 저장 (JSON)
  * @param value 열려있는 탭 아이디들의 배열
  */
-function setOpenTabIds(value: string[]) {
+function setOpenTabIds(value: number[]) {
   setStoredJson(OPEN_TAB_IDS_KEY, value)
 }
 
@@ -192,15 +175,15 @@ function setOpenTabIds(value: string[]) {
  * 로컬스토리지에서 마지막으로 위치했던 폴더의 아이디 얻기
  * @returns 마지막으로 위치했던 폴더의 아이디 | 루트 폴더 아이디
  */
-function getLastFolderId(): string {
-  return getStoredString(LAST_FOLDER_ID_KEY, ROOT_FOLDER_ID)
+function getLastFolderId(): number {
+  return getStoredNumber(LAST_FOLDER_ID_KEY, ROOT_FOLDER_ID);
 }
 
 /**
  * 로컬스토리지에 마지막으로 위치했던 폴더의 아이디 저장
  * @param value 마지막으로 위치했던 폴더의 아이디
  */
-function setLastFolderId(value: string) {
+function setLastFolderId(value: number) {
   setStored(LAST_FOLDER_ID_KEY, value)
 }
 

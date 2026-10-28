@@ -4,7 +4,7 @@
  */
 
 // utils
-import { DOC_ROUTE, docHref, folderHref, HOME_TAB_ID } from '../utils/routingUtil'
+import { DOC_ROUTE, docHref, folderHref, HOME_TAB_ID, parseId, type TabId } from '../utils/routingUtil'
 
 // hooks
 import { matchPath, useNavigate } from 'react-router'
@@ -13,8 +13,8 @@ import { matchPath, useNavigate } from 'react-router'
 import { useTabStore } from '../stores/tabStore'
 import { useFolderStore } from '../stores/folderStore'
 
-function getActiveTabId() {
-  return matchPath(DOC_ROUTE, window.location.pathname)?.params.docId ?? HOME_TAB_ID
+function getActiveTabId(): TabId {
+  return parseId(matchPath(DOC_ROUTE, window.location.pathname)?.params.docId) ?? HOME_TAB_ID;
 }
 
 function getLastFolderHref() {
@@ -35,7 +35,7 @@ export default function useCenterActions() {
    * 폴더 열기. 홈 탭으로 가서 그 폴더 안을 보여줌. null인 경우, 맨 위
    * @param folderId 폴더 아이디
    */
-  function openFolder(folderId: string) {
+  function openFolder(folderId: number) {
     navigate(folderHref(folderId))
   }
 
@@ -43,7 +43,7 @@ export default function useCenterActions() {
    * 탭 선택 시 주소 이동
    * @param id 문서 아이디 | 'HOME_TAB_ID'
    */
-  function selectTab(id: string) {
+  function selectTab(id: TabId) {
     navigate(id === HOME_TAB_ID ? getLastFolderHref() : docHref(id))
   }
 
@@ -53,7 +53,7 @@ export default function useCenterActions() {
    * @param title 문서 제목
    * @param highlightChunkId
    */
-  function openDocTab(docId: string, title: string, highlightChunkId?: string) {
+  function openDocTab(docId: number, title: string, highlightChunkId?: string) {
     putTab(docId, title, highlightChunkId)
     navigate(docHref(docId))
   }
@@ -62,7 +62,7 @@ export default function useCenterActions() {
    * 탭 닫기. 보고 있던 탭이면 문서함으로 (replace: 닫은 문서로 뒤로가기 되지 않게)
    * @param docId 문서 아이디
    */
-  function closeTab(docId: string) {
+  function closeTab(docId: number) {
     removeTab(docId)
     if (getActiveTabId() === docId) navigate(getLastFolderHref(), { replace: true })
   }
