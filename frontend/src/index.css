@@ -9,6 +9,7 @@
   --color-primary-soft: #eef2ff;  /* 활성 탭 배경, 사용자 말풍선 */
   --color-ai: #7c3aed;            /* AI 관련 표시 */
   --color-highlight: #fde68a;     /* 문서 근거 하이라이트 */
+  --color-danger: #dc2626;        /* 에러 등 위험 */
 
   /* 색: 바탕 */
   --color-background: #f8f8f9;        /* 앱 배경 */

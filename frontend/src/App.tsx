@@ -3,6 +3,9 @@
  * 주소에만 있는 문서(새로고침·공유 링크)의 탭 만들기, 문서가 없거나 권한 밖이면 마지막 폴더로
  */
 
+// libararys
+import { Toaster } from 'sonner';
+
 // components
 import Sidebar from './components/sidebar/Sidebar';
 import CenterArea from './components/documents/CenterArea';
@@ -92,6 +95,17 @@ function App() {
 
       {/* 채팅 패널 */}
       <ChatPanel />
+
+      {/* sonner toast */}
+      <Toaster
+        position="top-center"
+        duration={3000}
+        toastOptions={{
+          classNames: {
+            error: '[&_[data-icon]]:text-danger',
+          },
+        }}
+      />
 
     </div>
   );
