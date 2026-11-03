@@ -27,7 +27,7 @@ type SortKey = 'date' | 'name'
 // 한 줄 공통 스타일
 const rowBase = 'grid w-full grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 rounded-md px-2 py-1.5 text-left text-sm hover:bg-background'
 
-function DocumentTable() {
+function FolderBrowser() {
   // ===== hooks =====
   const navigate = useNavigate()
   const { folderId } = useCenterLocation()
@@ -156,4 +156,4 @@ function DocumentTable() {
   )
 }
 
-export default DocumentTable
+export default FolderBrowser

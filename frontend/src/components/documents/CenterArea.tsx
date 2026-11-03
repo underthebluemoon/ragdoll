@@ -5,7 +5,7 @@
 // components
 import CenterTab from './CenterTab'
 import DocumentViewer from './DocumentViewer'
-import DocumentTable from './DocumentTable'
+import FolderBrowser from './FolderBrowser'
 
 // utils
 import { HOME_TAB_ID } from '../../utils/routingUtil'
@@ -39,7 +39,7 @@ function CenterArea() {
         // 주소로 들어온 문서의 탭을 만드는 중 (새로고침·공유 링크)
         <p className="p-6 text-sm text-muted-foreground">문서를 불러오는 중…</p>
       ) : (
-        <DocumentTable />
+        <FolderBrowser />
       )}
 
     </main>
