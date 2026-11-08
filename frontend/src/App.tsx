@@ -1,10 +1,12 @@
 /**
  * 전체 레이아웃 (사이드바 | 가운데 | 채팅)
- * 주소에만 있는 문서(새로고침·공유 링크)의 탭 만들기, 문서가 없거나 권한 밖이면 마지막 폴더로
+ * 탭 목록에 없고 주소에만 있는 문서(새로고침·공유 링크)의 탭 만들기, 불러오지 못하면 마지막 폴더로
+ * 진입/새로고침 시 탭 복원
  */
 
-// libararys
-import { Toaster } from 'sonner';
+// librarys
+import { toast, Toaster } from 'sonner';
+import axios from 'axios';
 
 // components
 import Sidebar from './components/sidebar/Sidebar';
@@ -50,18 +52,36 @@ function App() {
 
   // 주소의 activeTabId로 문서 호출
   useEffect(() => {
-    if (!missingDocId) return;
+    if (missingDocId === null) return;
 
     let ignore = false;
-    getDocument(missingDocId).then(doc => {
-      if (ignore) return;
 
-      if (doc) {
+    // activeTabId가 탭 목록에 없는 경우 해당 문서 호출 api
+    async function loadDocument(missingDocId: number) {
+      try {
+        const doc = await getDocument(missingDocId);
+        if(ignore) return;
         putTab(doc.id, doc.title);
-      } else {
+
+      } catch (error) {
+        if(ignore) return;
+
+        // 404
+        if(axios.isAxiosError(error) && error.response?.status === 404) {
+          toast.error('문서를 찾을 수 없습니다.');
+          goBackToFolder();
+          return;
+        }
+
+        // 나머지 처리
+        toast.error('문서를 불러오는 것에 실패했습니다.', { id: 'doc-load-error' });
+        console.error('loadDocument api error:', error);
         goBackToFolder();
       }
-    });
+    };
+
+    loadDocument(missingDocId);
+
     return () => {
       ignore = true;
     };
@@ -69,16 +89,41 @@ function App() {
 
   // 새로고침 및 진입 시 이전 탭 불러오기
   useEffect(() => {
+    // 로컬스토리지 불러오기
     const loadOpenIds = localStorageUtil.getOpenTabIds();
     if (loadOpenIds.length === 0) return;
 
     let ignore = false;
-    getDocumentsByIds(loadOpenIds).then(docs => {
-      if (ignore) return;
-      docs.forEach(doc => putTab(doc.id, doc.title));
-    });
 
-    return () => { ignore = true; };
+    // 문서 id 배열로 한번에 호출 api
+    async function loadDocumentsByIds() {
+      try {
+        const docs = await getDocumentsByIds(loadOpenIds);
+        if(ignore) return;
+        docs.forEach(doc => putTab(doc.id, doc.title));
+
+        // 문서가 누락된 경우 로컬스토리지 다시 저장
+        if (docs.length < loadOpenIds.length) {
+          const message = docs.length === 0 ? '이전 탭을 불러오지 못했습니다.' : '이전 탭 일부를 불러오지 못했습니다.';
+          toast.error(message);
+          localStorageUtil.setOpenTabIds(useTabStore.getState().tabs.map(tab => tab.docId));
+        }
+
+      } catch (error) {
+        if(ignore) return;
+
+        // 나머지 처리
+        toast.error('문서를 불러오는 것에 실패했습니다.', { id: 'doc-load-error' });
+        console.error('loadDocumentsByIds api error:', error);
+
+      }
+    };
+
+    loadDocumentsByIds();
+
+    return () => {
+      ignore = true;
+    };
   }, [putTab]);
 
 
@@ -86,9 +131,7 @@ function App() {
     <div className="flex h-screen min-w-180 bg-background text-foreground">
 
       {/* 사이드바 */}
-      <Sidebar
-        // onSelectDoc={openDocTab}
-      />
+      <Sidebar />
 
       {/* 가운데 영역 - 폴더, 문서 뷰어 */}
       <CenterArea />

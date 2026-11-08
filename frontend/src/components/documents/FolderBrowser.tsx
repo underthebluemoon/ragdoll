@@ -77,7 +77,7 @@ function FolderBrowser() {
         // 나머지 에러 처리 : 500 등 서버 에러 포함
         setFailFolderId(folderId);
         toast.error('폴더를 불러오는 것에 실패했습니다.');
-        console.error('FolderBrowser api error:', error);
+        console.error('loadPathAndItems api error:', error);
       }
     };
 
