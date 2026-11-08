@@ -19,6 +19,7 @@ import { getDocument, getDocumentsByIds } from './api/documents';
 // utils
 import { folderHref, HOME_TAB_ID } from './utils/routingUtil';
 import localStorageUtil from './utils/localStorageUtil';
+import { getErrorMessage } from './utils/errorUtil';
 
 // hooks
 import { useEffect, useEffectEvent } from 'react';
@@ -75,13 +76,13 @@ function App() {
 
         // 404
         if(axios.isAxiosError(error) && error.response?.status === 404) {
-          toast.error('문서를 찾을 수 없습니다.');
+          toast.error(getErrorMessage(error));
           goBackToFolder();
           return;
         }
 
         // 나머지 처리
-        toast.error('문서를 불러오는 것에 실패했습니다.', { id: 'doc-load-error' });
+        toast.error(getErrorMessage(error, '문서를 불러오는 것에 실패했습니다.'), { id: 'doc-load-error' });
         console.error('loadDocument api error:', error);
         goBackToFolder();
       }
@@ -129,7 +130,7 @@ function App() {
         if(ignore) return;
 
         // 나머지 처리
-        toast.error('문서를 불러오는 것에 실패했습니다.', { id: 'doc-load-error' });
+        toast.error(getErrorMessage(error, '문서를 불러오는 것에 실패했습니다.'), { id: 'doc-load-error' });
         console.error('loadDocumentsByIds api error:', error);
 
       }

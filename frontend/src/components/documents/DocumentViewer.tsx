@@ -14,6 +14,9 @@ import Breadcrumb from './Breadcrumb';
 import { getDocument } from '../../api/documents';
 import { getFolderPath } from '../../api/folders';
 
+// utils
+import { getErrorMessage } from '../../utils/errorUtil';
+
 // types
 import type { DocumentSummary, FolderSummary } from '../../api/types';
 import type { DocTab } from '../../stores/tabStore';
@@ -66,16 +69,15 @@ function DocumentViewer({ activeDoc }: Props) {
 
         // 404
         if(axios.isAxiosError(error) && error.response?.status === 404) {
-          closeMissingTab()
-          toast.error('문서를 찾을 수 없습니다.');
+          closeMissingTab();
+          toast.error(getErrorMessage(error));
           return;
         }
 
         // 나머지 에러
         setFailDocId(activeDoc.docId);
-        toast.error('문서를 불러오는 것에 실패했습니다.');
+        toast.error(getErrorMessage(error, '문서를 불러오는 것에 실패했습니다.'));
         console.error('loadDocAndPath api error:', error);
-
       }
     };
 

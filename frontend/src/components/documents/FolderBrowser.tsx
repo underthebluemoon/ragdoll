@@ -13,6 +13,7 @@ import { getFolderItems, getFolderPath, ROOT_FOLDER_ID } from '../../api/folders
 
 // utils
 import { folderHref } from '../../utils/routingUtil';
+import { getErrorMessage } from '../../utils/errorUtil';
 
 // types
 import type { FolderItemsResponse, FolderSummary } from '../../api/types';
@@ -70,13 +71,13 @@ function FolderBrowser() {
         // 404
         if(axios.isAxiosError(error) && error.response?.status === 404) {
           navigate(folderHref(ROOT_FOLDER_ID), { replace: true });
-          toast.error('폴더를 찾을 수 없습니다.');
+          toast.error(getErrorMessage(error));
           return;
         }
 
         // 나머지 에러 처리 : 500 등 서버 에러 포함
         setFailFolderId(folderId);
-        toast.error('폴더를 불러오는 것에 실패했습니다.');
+        toast.error(getErrorMessage(error, '폴더를 불러오는 것에 실패했습니다.'));
         console.error('loadPathAndItems api error:', error);
       }
     };
