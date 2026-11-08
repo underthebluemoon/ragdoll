@@ -39,24 +39,31 @@ function App() {
   const putTab = useTabStore(state => state.putTab);
   const lastFolderId = useFolderStore(state => state.lastFolderId);
 
-  // ===== 탭 제어 =====
+  // ===================
+  // ||     탭 제어     ||
+  // ===================
   // 주소에 있는 문서인데 탭이 없으면 탭을 새로 열기 (새로고침, 공유 링크, 닫은 탭으로 뒤로가기)
-  // 문서 정보(제목)를 서버에서 받아서 탭 추가. 없거나 권한 밖이면 문서함으로 (replace)
+  // 문서 정보(제목)를 서버에서 받아서 탭 추가. 없거나 권한 밖이면 마지막 폴더로 (replace)
 
   // 주소의 문서가 탭에 없는 경우
   const missingDocId = (activeTabId !== HOME_TAB_ID && !tabs.some(t => t.docId === activeTabId)) ? activeTabId : null;
 
+  // ===== 주소의 activeTabId로 문서 호출 =====
+
+  // 마지막 폴더 위치로 이동 - 의존성 회피를 위해
   const goBackToFolder = useEffectEvent(() => {
     navigate(folderHref(lastFolderId), { replace: true });
   });
 
-  // 주소의 activeTabId로 문서 호출
   useEffect(() => {
     if (missingDocId === null) return;
 
     let ignore = false;
 
-    // activeTabId가 탭 목록에 없는 경우 해당 문서 호출 api
+    /**
+     * activeTabId가 탭 목록에 없는 경우 해당 문서 호출 api. 즉, 현재 주소에 해당하는 문서가 탭 목록에 없는 경우 요청.
+     * @param missingDocId 탭 목록에 누락된, 현재 주소에 해당하는 문서 아이디
+     */
     async function loadDocument(missingDocId: number) {
       try {
         const doc = await getDocument(missingDocId);
@@ -87,23 +94,32 @@ function App() {
     };
   }, [missingDocId, putTab]);
 
-  // 새로고침 및 진입 시 이전 탭 불러오기
+  // ===== 새로고침 및 진입 시 이전 탭 불러오기 =====
+
+  // 현재 주소의 문서 아이디 - 의존성 회피를 위해
+  const getEntryDocId = useEffectEvent(() => activeTabId);
+
   useEffect(() => {
+    const entryDocId = getEntryDocId();
     // 로컬스토리지 불러오기
-    const loadOpenIds = localStorageUtil.getOpenTabIds();
-    if (loadOpenIds.length === 0) return;
+    const restoreIds = localStorageUtil.getOpenTabIds().filter(id => id !== entryDocId);
+    if (restoreIds.length === 0) return;
 
     let ignore = false;
 
-    // 문서 id 배열로 한번에 호출 api
+    /**
+     * 로컬 스토리지에 저장된 문서 id 배열로 한번에 호출 api 처리.
+     * 단, 현재 주소에 해당하는 문서는 요청하지 않음.
+     * 로컬 스토리지에 저장된 id들의 문서 정보(id, title)을 tabs에 저장.
+     */
     async function loadDocumentsByIds() {
       try {
-        const docs = await getDocumentsByIds(loadOpenIds);
+        const docs = await getDocumentsByIds(restoreIds);
         if(ignore) return;
         docs.forEach(doc => putTab(doc.id, doc.title));
 
         // 문서가 누락된 경우 로컬스토리지 다시 저장
-        if (docs.length < loadOpenIds.length) {
+        if (docs.length < restoreIds.length) {
           const message = docs.length === 0 ? '이전 탭을 불러오지 못했습니다.' : '이전 탭 일부를 불러오지 못했습니다.';
           toast.error(message);
           localStorageUtil.setOpenTabIds(useTabStore.getState().tabs.map(tab => tab.docId));

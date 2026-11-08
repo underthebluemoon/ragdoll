@@ -3,18 +3,23 @@
  */
 
 // librarys
-import { useEffect, useState } from 'react'
+import { useEffect, useEffectEvent, useState } from 'react';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 // components
-import Breadcrumb from './Breadcrumb'
+import Breadcrumb from './Breadcrumb';
 
 // api
-import { getDocument } from '../../api/documents'
-import { getFolderPath } from '../../api/folders'
+import { getDocument } from '../../api/documents';
+import { getFolderPath } from '../../api/folders';
 
 // types
-import type { DocumentSummary, FolderSummary } from '../../api/types'
-import type { DocTab } from '../../stores/tabStore'
+import type { DocumentSummary, FolderSummary } from '../../api/types';
+import type { DocTab } from '../../stores/tabStore';
+
+// hooks
+import useCenterActions from '../../hooks/useCenterActions';
 
 interface Props {
   activeDoc: DocTab
@@ -22,35 +27,76 @@ interface Props {
 
 function DocumentViewer({ activeDoc }: Props) {
 
-  const [docDetail, setDocDetail] = useState<{ docId: number; doc: DocumentSummary | undefined; path: FolderSummary[] | undefined } | null>(null)
+  // ===== hooks =====
+  const { closeTab } = useCenterActions();
+  const closeMissingTab = useEffectEvent(() => {
+    closeTab(activeDoc.docId);
+  })
 
-  // 문서 호출 → 호출된 문서의 폴더id로 문서의 경로 호출
+  // ===== 데이터 호출 =====
+
+  // 표시할 문서 데이터: 문서 아이디, 문서 요약, 문서 경로
+  const [docDetail, setDocDetail] = useState<{ docId: number; doc: DocumentSummary; path: FolderSummary[] } | null>(null);
+
+  // 실패
+  const [failDocId, setFailDocId] = useState<number | null>(null);
+  const isDocFailed = activeDoc.docId === failDocId;
+
+
+  // 문서 호출 후 호출된 문서의 폴더id로 문서의 경로 호출
   useEffect(() => {
-    let ignore = false
+    let ignore = false;
 
-    async function load() {
-      // 1. 문서 호출
-      const doc = await getDocument(activeDoc.docId)
-      // 2. 문서가 호출된 뒤 폴더 경로 호출
-      const path = doc ? await getFolderPath(doc.folderId) : undefined
-      if (!ignore) setDocDetail({ docId: activeDoc.docId, doc, path })
+
+    async function loadDocAndPath() {
+      try {
+        // 1. 문서 호출 - 문서 하나 호출 api
+        const doc = await getDocument(activeDoc.docId)
+        if(ignore) return;
+
+        // 2. 문서가 호출된 뒤 폴더 경로 호출 - 루트 ~ 현재 경로 호출 api
+        const path = await getFolderPath(doc.folderId)
+        if(ignore) return;
+
+        setDocDetail({ docId: activeDoc.docId, doc, path });
+        setFailDocId(null);
+
+      } catch (error) {
+        if(ignore) return;
+
+        // 404
+        if(axios.isAxiosError(error) && error.response?.status === 404) {
+          closeMissingTab()
+          toast.error('문서를 찾을 수 없습니다.');
+          return;
+        }
+
+        // 나머지 에러
+        setFailDocId(activeDoc.docId);
+        toast.error('문서를 불러오는 것에 실패했습니다.');
+        console.error('loadDocAndPath api error:', error);
+
+      }
+    };
+
+    loadDocAndPath();
+
+    return () => {
+      ignore = true;
     }
-    load()
-
-    return () => { ignore = true }
-  }, [activeDoc.docId])
+  }, [activeDoc.docId]);
 
   // 로딩 중
-  const isDocPending = docDetail?.docId !== activeDoc.docId
+  const isDocPending = docDetail?.docId !== activeDoc.docId;
   // 로딩 완료 후 담기 - 사용 및 가공용
-  const doc = isDocPending ? undefined : docDetail.doc
-  const path = isDocPending ? undefined : docDetail.path
+  const doc = isDocPending ? undefined : docDetail.doc;
+  const path = isDocPending ? undefined : docDetail.path;
 
   // 문서가 속한 폴더 조각들 + 마지막에 문서 제목(folderId 없음 → 누를 수 없음)
   const crumbs = [
     ...(path ?? []).map(folder => ({ label: folder.name, folderId: folder.id })),
     { label: activeDoc.title },
-  ]
+  ];
 
   return (
 
@@ -70,6 +116,7 @@ function DocumentViewer({ activeDoc }: Props) {
         )}
 
         {/* 본문: GET /documents/{id} 응답의 텍스트 렌더, highlightChunkId 있으면 스크롤+하이라이트 */}
+        {isDocFailed && <p className="text-sm text-muted-foreground">불러오기 실패</p>}
       </div>
     </div>
 
