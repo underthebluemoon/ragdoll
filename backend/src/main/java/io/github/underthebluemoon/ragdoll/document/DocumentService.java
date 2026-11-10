@@ -32,19 +32,20 @@ public class DocumentService {
 
     /**
      * documentId로 문서 찾기
+     * @param userId 조회 user PK
      * @param documentId documents PK
      * @return 문서 정보 객체 - id, title, folderId, uploader(name), createdAt, updatedAt
-     * @throws BusinessException DOCUMENT_NOT_FOUND : 문서가 없거나 삭제 됨
+     * @throws BusinessException DOCUMENT_NOT_FOUND : 문서 미존재 / 문서 삭제 / 권한 없음
      * @throws IllegalStateException 업로더 없음 (데이터 꼬임)
      */
-    public DocumentSummary getDocument(Long documentId) {
+    public DocumentSummary getDocument(Long userId, Long documentId) {
         // 문서 조회 - 결과가 없으면 NOT_FOUND
-        Document document = documentRepository.findByIdAndDeletedAtIsNull(documentId)
-            .orElseThrow(() -> new BusinessException(CustomResponseCode.DOCUMENT_NOT_FOUND, "document not found: documentId=" + documentId));
+        Document document = documentRepository.findReadableDocumentById(userId, documentId)
+            .orElseThrow(() -> new BusinessException(CustomResponseCode.DOCUMENT_NOT_FOUND, "document not found: userId= " + userId + " | documentId= " + documentId));
 
         // 업로더 조회 - 결과가 없으면 500
         User uploader = userRepository.findById(document.getUploaderId())
-            .orElseThrow(() -> new IllegalStateException("uploader not found: documentId=" + documentId + ", uploaderId=" + document.getUploaderId()));
+            .orElseThrow(() -> new IllegalStateException("uploader not found: userId= " + userId + " | documentId= " + documentId + " | uploaderId= " + document.getUploaderId()));
 
         // 가공
         return new DocumentSummary(
@@ -57,15 +58,16 @@ public class DocumentService {
 
     /**
      * documentId List로 여러 문서 찾기
-     * 없거나 삭제된 문서는 예외 없이 결과에서 제외. 업로더가 없으면 uploader는 null(warn log).
+     * 권한이 없거나 삭제된 문서는 예외 없이 결과에서 제외. 업로더가 없으면 uploader는 null(warn log).
+     * @param userId 조회 user PK
      * @param documentIds documents PK가 담긴 List
      * @return 요청 순서대로 정렬(중복 없음)된 문서 정보 객체(id, title, folderId, uploader(name), createdAt, updatedAt)들이 담긴 List.
      */
-    public List<DocumentSummary> getDocumentsByIds(List<Long> documentIds) {
+    public List<DocumentSummary> getDocumentsByIds(Long userId, List<Long> documentIds) {
         // documentIds가 비어있을 경우, 바로 반환
         if (documentIds.isEmpty()) { return List.of(); }
         // 문서 조회
-        List<Document> documentList = documentRepository.findByIdInAndDeletedAtIsNull(documentIds);
+        List<Document> documentList = documentRepository.findAllReadableDocumentByIds(userId, documentIds);
         // 업로더 조회
         List<Long> uploaderIdList = documentList.stream().map(Document::getUploaderId).toList();
         List<User> uploaderList = userRepository.findAllById(uploaderIdList);
@@ -77,7 +79,7 @@ public class DocumentService {
         List<DocumentSummary> result = documentList.stream().map(d -> {
             String uploader = uploaderNameById.get(d.getUploaderId());
             if(uploader == null) {
-                log.warn("uploader not found: documentId={}, uploaderId={}", d.getId(), d.getUploaderId());
+                log.warn("uploader not found: documentId= {} | uploaderId= {}", d.getId(), d.getUploaderId());
             }
             return new DocumentSummary(
                 d.getId(), d.getTitle(), d.getFolderId(), uploader,

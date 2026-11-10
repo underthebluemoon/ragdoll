@@ -5,6 +5,7 @@ import io.github.underthebluemoon.ragdoll.global.response.ResponseCodeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -58,6 +59,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ResponseCodeDTO<Void>> handle(MissingServletRequestParameterException e) {
         log.debug("파라미터 없음: {}", e.getMessage());
+        return generateErrorResponse(CustomResponseCode.BAD_REQUEST);
+    }
+
+    /**
+     * 헤더가 필요한 api요청에서 헤더 누락
+     * @param e 요청 헤더 예외
+     * @return Http 응답 - BAD_REQUEST
+     */
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ResponseCodeDTO<Void>> handle(MissingRequestHeaderException e) {
+        log.debug("헤더 없음: {}", e.getMessage());
         return generateErrorResponse(CustomResponseCode.BAD_REQUEST);
     }
 

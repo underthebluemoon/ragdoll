@@ -41,21 +41,21 @@ public class FolderService {
      * folderId 로 depth 0 부터 자신까지 직계 경로 찾기
      * @param folderId folders PK
      * @return depth 0부터 자신까지 경로 List
-     * @throws BusinessException FOLDER_NOT_FOUND: 1. folderId로 조회한 폴더가 없는 경우 2.folderId의 parentId 값은 존재하지만, parentId가 조회되지 않는 경우
+     * @throws BusinessException FOLDER_NOT_FOUND: 1. folderId로 조회한 폴더가 없는 경우. 2.folderId의 parentId 값은 존재하지만, parentId가 조회되지 않는 경우. 3. userId에게 folderId 읽기 권한이 없는 경우.
      */
-    public List<FolderSummary> getPath(Long folderId) {
+    public List<FolderSummary> getPath(Long userId, Long folderId) {
         List<Folder> path = new ArrayList<>();
 
         // folderId로 parentId 찾기 - folderId 조회 결과 없으면 NOT_FOUND
-        Folder folder = folderRepository.findByIdAndDeletedAtIsNull(folderId)
-            .orElseThrow(() -> new BusinessException(CustomResponseCode.FOLDER_NOT_FOUND, "folder not found: folderId=" + folderId));
+        Folder folder = folderRepository.findReadableFolderById(userId, folderId)
+            .orElseThrow(() -> new BusinessException(CustomResponseCode.FOLDER_NOT_FOUND, "folder not found: userId= " + userId + " | folderId= " + folderId));
         path.add(folder);
 
         // parentId 로 거슬러 올라가며 path에 담기 - parentId를 folderId로 갖는 폴더가 없으면 NOT_FOUND
         while (folder.getParentId() != null) {
             Long parentId = folder.getParentId();
-            Folder parentFolder = folderRepository.findByIdAndDeletedAtIsNull(parentId)
-                .orElseThrow(() -> new BusinessException(CustomResponseCode.FOLDER_NOT_FOUND, "parent folder not found: folderId=" + folderId + ", parentId=" + parentId));
+            Folder parentFolder = folderRepository.findReadableFolderById(userId, parentId)
+                .orElseThrow(() -> new BusinessException(CustomResponseCode.FOLDER_NOT_FOUND, "parent folder not found: userId= " + userId +  " | folderId= " + folderId + " | parentId= " + parentId));
             path.add(parentFolder);
             folder = parentFolder;
         }
@@ -73,17 +73,17 @@ public class FolderService {
      * 문서의 uploaderId로 조회한 user 정보가 없는 경우 uploader는 null(warn log)
      * @param folderId folders PK
      * @return 현재 위치의 폴더 정보 List (folderId, name, depth) + 현재 위치의 문서 정보 List (documentId, title, folderId, uploader(name), createdAt, updatedAt)
-     * @throws BusinessException FOLDER_NOT_FOUND : folderId로 조회한 폴더가 없는 경우
+     * @throws BusinessException FOLDER_NOT_FOUND : 1. folderId로 조회한 폴더가 없는 경우. 2. userId에게 folderId의 읽기 권한이 없는 경우.
      */
-    public FolderItemsResponse getItems(Long folderId) {
+    public FolderItemsResponse getItems(Long userId, Long folderId) {
         // folderId 존재 확인 - 없으면 NOT_FOUND
-        folderRepository.findByIdAndDeletedAtIsNull(folderId)
-            .orElseThrow(() -> new BusinessException(CustomResponseCode.FOLDER_NOT_FOUND, "folder not found: folderId=" + folderId));
+        folderRepository.findReadableFolderById(userId, folderId)
+            .orElseThrow(() -> new BusinessException(CustomResponseCode.FOLDER_NOT_FOUND, "folder not found: userId= " + userId + " | folderId= " + folderId));
 
         // 현재 위치에 있는 폴더 리스트
-        List<Folder> currentFolders = folderRepository.findByParentIdAndDeletedAtIsNullOrderBySortOrderAscNameAsc(folderId);
+        List<Folder> currentFolders = folderRepository.findAllReadableFolderByParentId(userId, folderId);
         // 현재 위치에 있는 문서 리스트
-        List<Document> currentDocuments = documentRepository.findByFolderIdAndDeletedAtIsNull(folderId);
+        List<Document> currentDocuments = documentRepository.findAllReadableDocumentByFolderId(userId, folderId);
 
         // 문서들의 uploaderId를 뽑아 조회
         List<Long> currentUploaderIds = currentDocuments.stream().map(Document::getUploaderId).toList();
@@ -97,7 +97,7 @@ public class FolderService {
         List<DocumentSummary> documentItems = currentDocuments.stream().map(d -> {
             String uploader = uploaderNameById.get(d.getUploaderId());
             if(uploader == null) {
-                log.warn("uploader not found: documentId={}, uploaderId={}", d.getId(), d.getUploaderId());
+                log.warn("uploader not found: documentId= {} | uploaderId= {}", d.getId(), d.getUploaderId());
             }
             return new DocumentSummary(
                 d.getId(), d.getTitle(), d.getFolderId(), uploader,
