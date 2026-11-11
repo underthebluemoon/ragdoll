@@ -23,7 +23,6 @@ public class Document {
     private String filePath;
     private String fileType;
     private Long fileSize;
-    private String content;
 
     private Instant createdAt;
     private Instant updatedAt;
@@ -46,7 +45,6 @@ public class Document {
     public String getFilePath() { return filePath; }
     public String getFileType() { return fileType; }
     public Long getFileSize() { return fileSize; }
-    public String getContent() { return content; }
 
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }

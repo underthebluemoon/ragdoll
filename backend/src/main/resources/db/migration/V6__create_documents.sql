@@ -10,7 +10,6 @@ CREATE TABLE documents (
   file_path VARCHAR(255) NOT NULL,
   file_type VARCHAR(255) NOT NULL,
   file_size BIGINT NOT NULL,
-  content TEXT,
 
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
