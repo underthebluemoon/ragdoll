@@ -175,4 +175,85 @@ VALUES
     61440,
     '2026-01-05 10:00:00+09',
     '2026-01-05 10:00:00+09'
+  ),
+  (
+    '분기 경영 회의록',
+    (SELECT id FROM folders WHERE name = '관리자 회의록'),
+    (SELECT id FROM users WHERE login_id = 'haneul.jung@ragdoll.dev'),
+    (SELECT id FROM users WHERE login_id = 'haneul.jung@ragdoll.dev'),
+    'documents/2026/10/seed-mgmt1.docx',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    40960,
+    '2026-10-02 18:00:00+09',
+    '2026-10-02 18:00:00+09'
+  ),
+  (
+    '감사 대응 회의록',
+    (SELECT id FROM folders WHERE name = '관리자 회의록'),
+    (SELECT id FROM users WHERE login_id = 'doyun.han@ragdoll.dev'),
+    (SELECT id FROM users WHERE login_id = 'doyun.han@ragdoll.dev'),
+    'documents/2026/10/seed-mgmt2.docx',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    35840,
+    '2026-10-15 16:00:00+09',
+    '2026-10-15 16:00:00+09'
+  ),
+  (
+    '2026 상반기 인사 평가',
+    (SELECT id FROM folders WHERE name = '인사팀'),
+    (SELECT id FROM users WHERE login_id = 'jieun.park@ragdoll.dev'),
+    (SELECT id FROM users WHERE login_id = 'jieun.park@ragdoll.dev'),
+    'documents/2026/07/seed-hr-eval.xlsx',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    81920,
+    '2026-07-10 10:00:00+09',
+    '2026-07-10 10:00:00+09'
+  ),
+  (
+    '복리후생 규정',
+    (SELECT id FROM folders WHERE name = '사내 규정'),
+    (SELECT id FROM users WHERE login_id = 'yuna.choi@ragdoll.dev'),
+    (SELECT id FROM users WHERE login_id = 'yuna.choi@ragdoll.dev'),
+    'documents/2026/03/seed-welfare.pdf',
+    'application/pdf',
+    225280,
+    '2026-03-02 09:00:00+09',
+    '2026-03-02 09:00:00+09'
+  ),
+  (
+    '사내 양식 모음',
+    (SELECT id FROM folders WHERE name = '자료실'),
+    (SELECT id FROM users WHERE login_id = 'seoyeon.park@ragdoll.dev'),
+    (SELECT id FROM users WHERE login_id = 'seoyeon.park@ragdoll.dev'),
+    'documents/2026/05/seed-forms.zip',
+    'application/zip',
+    1048576,
+    '2026-05-12 14:00:00+09',
+    '2026-05-12 14:00:00+09'
+  ),
+  (
+    '2025 결산 원본',
+    (SELECT id FROM folders WHERE name = '보관'),
+    (SELECT id FROM users WHERE login_id = 'minsu.park@ragdoll.dev'),
+    (SELECT id FROM users WHERE login_id = 'minsu.park@ragdoll.dev'),
+    'documents/2026/01/seed-archive.pdf',
+    'application/pdf',
+    524288,
+    '2026-01-20 10:00:00+09',
+    '2026-01-20 10:00:00+09'
+  );
+
+INSERT INTO documents (title, folder_id, uploader_id, updater_id, file_path, file_type, file_size, created_at, updated_at, deleted_at)
+VALUES
+  (
+    '결산 메모 (삭제됨)',
+    (SELECT id FROM folders WHERE name = '결산'),
+    (SELECT id FROM users WHERE login_id = 'mirae@ragdoll.dev'),
+    (SELECT id FROM users WHERE login_id = 'mirae@ragdoll.dev'),
+    'documents/2026/10/seed-deleted.txt',
+    'text/plain',
+    2048,
+    '2026-10-11 09:00:00+09',
+    '2026-10-11 09:00:00+09',
+    '2026-10-12 09:00:00+09'
   );
