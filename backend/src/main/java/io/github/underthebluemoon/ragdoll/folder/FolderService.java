@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,31 +39,21 @@ public class FolderService {
      * folderId 로 depth 0 부터 자신까지 직계 경로 찾기
      * @param folderId folders PK
      * @return depth 0부터 자신까지 경로 List
-     * @throws BusinessException FOLDER_NOT_FOUND: 1. folderId로 조회한 폴더가 없는 경우. 2.folderId의 parentId 값은 존재하지만, parentId가 조회되지 않는 경우. 3. userId에게 folderId 읽기 권한이 없는 경우.
+     * @throws BusinessException FOLDER_NOT_FOUND: 1. folderId로 조회한 폴더가 없는 경우. 2.경로 중 삭제/읽기 권한 없는 폴더가 있는 경우.
      */
     public List<FolderSummary> getPath(Long userId, Long folderId) {
-        List<Folder> path = new ArrayList<>();
+        // folderId로 경로 찾기
+        List<Folder> folderPath = folderRepository.findAllReadableFolderPathById(userId, folderId);
 
-        // folderId로 parentId 찾기 - folderId 조회 결과 없으면 NOT_FOUND
-        Folder folder = folderRepository.findReadableFolderById(userId, folderId)
-            .orElseThrow(() -> new BusinessException(CustomResponseCode.FOLDER_NOT_FOUND, "folder not found: userId= " + userId + " | folderId= " + folderId));
-        path.add(folder);
-
-        // parentId 로 거슬러 올라가며 path에 담기 - parentId를 folderId로 갖는 폴더가 없으면 NOT_FOUND
-        while (folder.getParentId() != null) {
-            Long parentId = folder.getParentId();
-            Folder parentFolder = folderRepository.findReadableFolderById(userId, parentId)
-                .orElseThrow(() -> new BusinessException(CustomResponseCode.FOLDER_NOT_FOUND, "parent folder not found: userId= " + userId +  " | folderId= " + folderId + " | parentId= " + parentId));
-            path.add(parentFolder);
-            folder = parentFolder;
+        // 결과가 빈 List인 경우 : 경로 중 폴더가 삭제되었거나 읽기 권한 없음 / 조회 폴더 미존재
+        if(folderPath.isEmpty()) {
+            throw new BusinessException(CustomResponseCode.FOLDER_NOT_FOUND, "folder not found: userId= " + userId + " | folderId= " + folderId);
         }
 
         // 가공
-        Collections.reverse(path);
-        return path.stream()
+        return folderPath.stream()
             .map(f -> new FolderSummary(f.getId(), f.getName(), f.getDepth()))
             .toList();
-
     }
 
     /**
