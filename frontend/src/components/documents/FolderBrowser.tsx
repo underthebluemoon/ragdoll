@@ -8,6 +8,8 @@ import { ArrowLeft, ChevronRight, FileText, FolderIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import axios from 'axios';
 
+import Breadcrumb from './Breadcrumb';
+
 // api
 import { getFolderItems, getFolderPath, ROOT_FOLDER_ID } from '../../api/folders';
 
@@ -115,11 +117,18 @@ function FolderBrowser() {
   // ===== 폴더의 내용이 비어있는 경우 =====
   const isEmpty = !isFolderPending && subFolders.length === 0 && sortedDocuments.length === 0;
 
+  // ===== Crumb =====
+  const crumbsProps = ( path ?? [] ).map((folder, i, arr) =>
+    i === arr.length -1
+      ? {label: folder.name}
+      : { label: folder.name, folderId: folder.id }
+  );
+
   return (
 
     <div className="flex min-h-0 flex-1 flex-col">
       {/* 머리 줄: 위로 가기 / 현재 위치 / 정렬 */}
-      <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border px-3">
+      <div className="flex min-h-10 shrink-0 items-center gap-2 border-b border-border px-3 py-1">
         <button
           className="rounded-md p-1 text-muted-foreground hover:bg-background hover:text-foreground disabled:opacity-30"
           onClick={() => openFolder(parentId)}
@@ -129,9 +138,12 @@ function FolderBrowser() {
         >
           <ArrowLeft className="size-4" />
         </button>
-        <span className="min-w-0 flex-1 truncate text-sm font-medium">
-          {path?.map(folder => folder.name).join(' / ') ?? ''}
-        </span>
+        <div className="min-w-0 flex-1">
+          <Breadcrumb
+            crumbs={crumbsProps}
+            wrap
+          />
+        </div>
         <select
           className="rounded-md border border-border bg-surface px-2 py-1 text-xs text-muted-foreground"
           value={sortKey}

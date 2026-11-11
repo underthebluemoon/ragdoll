@@ -104,9 +104,11 @@ function DocumentViewer({ activeDoc }: Props) {
 
     <div className="flex min-h-0 flex-1 flex-col">
       {/* 경로는 고정, 아래 본문만 스크롤 */}
-      <Breadcrumb
-        crumbs={crumbs}
-      />
+      <div className="flex h-8 shrink-0 items-center border-b border-border px-3">
+        <Breadcrumb
+          crumbs={crumbs}
+        />
+      </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         {/* 문서 머리: 전체 제목(자르지 않음) + 업로더 · 수정일 */}

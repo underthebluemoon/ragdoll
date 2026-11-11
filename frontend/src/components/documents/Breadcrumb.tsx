@@ -16,22 +16,23 @@ interface Crumb {
 
 interface Props {
   crumbs: Crumb[]
+  wrap?: boolean
 }
 
-function Breadcrumb({crumbs}: Props) {
+function Breadcrumb({ crumbs, wrap = false }: Props) {
   // ===== hooks =====
   const { openFolder } = useCenterActions()
 
   return(
-    <nav aria-label="경로" className="flex h-8 shrink-0 items-center border-b border-border px-3 text-xs text-muted-foreground">
-      <ol className="flex min-w-0 items-center gap-1">
+    <nav aria-label="경로" className="flex min-w-0 items-center text-xs text-muted-foreground">
+      <ol className={`flex min-w-0 items-center gap-1 ${wrap ? 'flex-wrap' : ''}`}>
         {crumbs.map(({ label, folderId }, i) => (
           // 폴더 조각은 줄어들지 않고, 현재 위치(문서 제목 등)만 길면 말줄임
           <li key={i} className={`flex items-center gap-1 ${folderId !== undefined ? 'shrink-0' : 'min-w-0'}`}>
             {/* 첫 조각이 아니면 앞에 구분 기호 */}
             {i > 0 && <ChevronRight className="size-3.5 shrink-0" aria-hidden="true" />}
 
-            {/* folderId가 있으면 누를 수 있는 버튼, 없으면 현재 위치라 그냥 글자 */}
+            {/* folderId가 있으면 누를 수 있는 버튼, 없으면 문서라 그냥 글자 */}
             {folderId !== undefined ? (
               <button className="hover:text-foreground" onClick={() => openFolder(folderId)}>
                 {label}
